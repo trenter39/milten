@@ -1,10 +1,20 @@
 <div id="navRow">
-    <h1>Personal Blog</h1>
-    <h1><a href="new">Add Post</a></h1>
+    <h1>Personal blog</h1>
+    <h1><a href="new">Add post</a></h1>
+</div>
+<div id="postControls">
+    <div>
+        <input type="text" name="search" id="searchInput" placeholder="Search for a post...">
+        <button id="searchButton">Search</button>
+    </div>
+    <select name="sort" id="sortSelect">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+    </select>
 </div>
 <div id="postList">
     {{#each posts}}
-    <div class="post">
+    <div class="post" data-date="{{formatDateData this.createdAt}}">
         <a href="/post/{{this.id}}" class="post-link">
             <div>
                 <h2 class="postHeading">{{this.title}}</h2>
@@ -20,4 +30,8 @@
         </a>
     </div>
     {{/each}}
+    <div id="noResults" style="display: none; text-align: left; font-size: 18px;">
+        <span id="resultText">No posts found!</span>
+        <button id="clearSearchButton">Clear</button>
+    </div>
 </div>

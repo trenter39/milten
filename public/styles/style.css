@@ -22,10 +22,27 @@ body {
     background: white;
 }
 
-#navRow {
+#navRow,
+#postControls {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+#postControls {
+    justify-content: baseline;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+#postControls > div {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 375px;
+    gap: 8px;
 }
 
 #navRow a {
@@ -44,14 +61,14 @@ body {
 }
 
 #sortSelect {
-    width: 50%;
-    padding: 10px;
+    width: 260px;
+    padding: 10px 10px 10px 15px;
     font-size: 18px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #fdfdfd;
-    margin-bottom: 20px;
     transition: border-color 0.3s;
+    cursor: pointer;
 }
 
 #container h1,
@@ -128,6 +145,12 @@ body {
     border: 1px solid #e0e0e0;
 }
 
+#sendCommentSection {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
 .commentHeader h3 {
     font-size: 16px;
     color: #333;
@@ -154,8 +177,10 @@ body {
 .postContentInput,
 .postCategoryInput,
 .postTagsInput,
-#commentInput {
-    padding: 15px 20px;
+#commentAuthorInput,
+#commentContentInput,
+#searchInput {
+    padding: 10px 10px 10px 15px;
     font-size: 18px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -169,7 +194,10 @@ body {
 .postCategoryInput:focus,
 .postTagsInput:focus,
 #commentInput:focus,
-#sortSelect:focus {
+#sortSelect:focus,
+#commentAuthorInput:focus,
+#commentContentInput:focus,
+#searchInput:focus {
     border-color: black;
     outline: none;
 }
@@ -178,9 +206,13 @@ body {
     line-height: 1.6;
 }
 
-#commentInput {
-    width: 100%;
+#sendCommentSection {
     margin-bottom: 16px;
+}
+
+#searchInput {
+    flex: 1;
+    height: 45px;
 }
 
 .input-block {
@@ -194,7 +226,8 @@ body {
 }
 
 .postDateInput,
-.postTagsInput {
+.postTagsInput,
+#commentContentInput {
     flex: 1;
 }
 
@@ -206,11 +239,14 @@ body {
 #inputs {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 
 #updateButton,
-#publishButton {
+#publishButton,
+#searchButton,
+#clearSearchButton,
+#sendCommentButton {
     cursor: pointer;
     height: 50px;
     font-size: 18px;
@@ -221,8 +257,18 @@ body {
 }
 
 #updateButton:hover,
-#publishButton:hover {
+#publishButton:hover,
+#searchButton:hover,
+#clearSearchButton:hover,
+#sendCommentButton:hover {
     border-color: black;
+}
+
+#searchButton,
+#clearSearchButton,
+#sendCommentButton {
+    width: 100px;
+    height: 45px;
 }
 
 .deleteButton {
@@ -281,4 +327,19 @@ body {
 .confirm-delete-btn:hover,
 .cancel-delete-btn:hover {
     color: black;
+}
+
+@media (max-width: 725px) {
+    #postControls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #postControls > div {
+        width: 100%;
+    }
+
+    #sortSelect {
+        width: 100%;
+    }
 }

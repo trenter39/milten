@@ -17,7 +17,7 @@ const handlebars = expressHandlebars.create({
             const options = { day: 'numeric', month: 'long', year: 'numeric' };
             return new Date(dateString).toLocaleDateString('en-US', options);
         },
-        formatDateData: function(dateString) {
+        formatDateData: function (dateString) {
             return new Date(dateString).toISOString().slice(0, 10);
         },
         trimContent: function (content) {
@@ -40,18 +40,17 @@ app.use(express.static('public'));
 
 app.get('/', (req, res) => res.redirect('/home'));
 
-// app.get('/admin', authMiddleware, async (req, res) => {
-app.get('/admin', async (req, res) => {
+app.get('/home', async (req, res) => {
     try {
-        const posts = await fetchPosts();
-        res.render('admin', {
-            title: 'Admin Home',
-            script: '<script src="/scripts/admin.js"></script>',
+        const posts = await fetchPosts({ mode: 'frontend' });
+        res.render('home', {
+            title: 'Home',
+            script: '<script src="/scripts/home.js"></script>',
             posts
         });
     } catch (err) {
-        console.log(err);
-        res.status(500).send("Error loading posts!")
+        console.error(err);
+        res.status(500).send("Error loading posts!");
     }
 });
 
@@ -71,18 +70,20 @@ app.get('/post/:id', async (req, res) => {
     }
 });
 
-app.get('/home', async (req, res) => {
+// app.get('/admin', authMiddleware, async (req, res) => {
+app.get('/admin', async (req, res) => {
     try {
-        const posts = await fetchPosts({mode: 'frontend'});
-        res.render('home', {
-            title: 'Home',
-            script: '<script src="/scripts/home.js"></script>',
+        const posts = await fetchPosts({ mode: 'frontend' });
+        res.render('admin', {
+            title: 'Admin Home',
+            script: `<script src="/scripts/home.js"></script>
+                <script src="/scripts/admin.js" ></script>`,
             posts
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error loading posts!");
-    }
+    console.log(err);
+    res.status(500).send("Error loading posts!")
+}
 });
 
 // app.get('/new', authMiddleware, (req, res) => {

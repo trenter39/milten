@@ -3,6 +3,9 @@
   "version": "1.0.1",
   "description": "Blog with CRUD operations and an API connection",
   "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
   "keywords": [],
   "author": "trenter39",
   "license": "MIT",
@@ -13,5 +16,8 @@
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
     "mysql2": "^3.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

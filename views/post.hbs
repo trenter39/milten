@@ -9,20 +9,23 @@
 <div id="commentSection">
     <h1 id="commentsHeader">Comments</h1>
     <form action="/post/{{post._id}}/comment" method="POST" id="commentForm">
-        <input type="text" name="comment" id="commentInput" placeholder="Write your thoughts..." required>
-        {{!-- <button type="submit">Submit</button> --}}
+        <div id="sendCommentSection">
+            <input type="text" name="commentAuthor" id="commentAuthorInput" placeholder="Your name" required>
+            <input type="text" name="commentContent" id="commentContentInput" placeholder="Comment?" required>
+            <button type="submit" id="sendCommentButton">Send</button>
+        </div>
     </form>
     {{#if comments}}
-        {{#each comments}}
-            <div class="commentBlock">
-                <div class="commentHeader">
-                    <h3>{{this.author}}</h3>
-                    <span class="commentTime">{{formatDate this.createdAt}}</span>
-                </div>
-                <p class="commentContent">{{this.content}}</p>
-            </div>
-        {{/each}}
+    {{#each comments}}
+    <div class="commentBlock">
+        <div class="commentHeader">
+            <h3>{{this.author}}</h3>
+            <span class="commentTime">{{formatDate this.createdAt}}</span>
+        </div>
+        <p class="commentContent">{{this.content}}</p>
+    </div>
+    {{/each}}
     {{else}}
-        <p id="noCommentsParagraph">No comments yet.</p>
+    <p id="noCommentsParagraph">No comments yet. Be the first to start the conversation!</p>
     {{/if}}
 </div>
