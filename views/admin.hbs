@@ -1,37 +1,37 @@
-<div id="navRow">
-    <h1>Personal blog</h1>
+<div id="nav-row">
+    <h1>Murny</h1>
     <h1><a href="new">Add post</a></h1>
 </div>
-<div id="postControls">
+<div id="post-filter">
     <div>
-        <input type="text" name="search" id="searchInput" placeholder="Search for a post...">
-        <button id="searchButton">Search</button>
+        <input type="text" name="search" id="search-input" placeholder="Search">
+        <button id="search-button">Search</button>
     </div>
-    <select name="sort" id="sortSelect">
+    <select name="sort" id="sort-select">
         <option value="newest">Newest first</option>
         <option value="oldest">Oldest first</option>
     </select>
 </div>
-<div id="postList">
+<div id="post-list">
     {{#each posts}}
-    <div class="post" data-date="{{formatDateData this.createdAt}}">
-        <a href="/post/{{this.id}}" class="post-link">
-            <div>
-                <h2 class="postHeading">{{this.title}}</h2>
+        <div class="post" data-date="{{formatDateData this.createdAt}}">
+            <a href="/post/{{this.id}}" class="post-link">
                 <div>
-                    <span class="postCategory">{{this.category}} | </span>
-                    <span class="postDate">{{formatDate this.createdAt}}</span>
+                    <h2 class="post-title">{{this.title}}</h2>
+                    <div>
+                        <span class="post-category">{{this.category}} | </span>
+                        <span class="post-date">{{formatDate this.createdAt}}</span>
+                    </div>
                 </div>
-            </div>
-            <div class="actionCaptions">
-                <h2><a href="update/{{this.id}}">Edit</a></h2>
-                <h2><button class="deleteButton" data-id="{{this.id}}">Delete</button></h2>
-            </div>
-        </a>
-    </div>
+                <div class="action-captions">
+                    <h2><a href="update/{{this.id}}">Edit</a></h2>
+                    <h2><button class="delete-button" data-id="{{this.id}}">Delete</button></h2>
+                </div>
+            </a>
+        </div>
     {{/each}}
-    <div id="noResults" style="display: none; text-align: left; font-size: 18px;">
-        <span id="resultText">No posts found!</span>
-        <button id="clearSearchButton">Clear</button>
+    <div id="no-results" style="display: none; text-align: left; font-size: 18px;">
+        <span id="result-text">No posts found!</span>
+        <button id="clear-search-button">Clear</button>
     </div>
 </div>

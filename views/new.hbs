@@ -1,20 +1,10 @@
-<div id="navRow">
-    <h1>Add new post</h1>
+<div id="nav-row">
+    <h1>New post</h1>
     <h1><a href="admin">Home</a></h1>
 </div>
-<form id="inputs" method="post" action="">
-    <input name="title" class="postTitleInput" type="text" placeholder="Title" required>
-    <textarea name="content" class="postContentInput" placeholder="Content" required></textarea>
-    <input name="category" class="postCategoryInput" type="text" placeholder="Category" required>
-    <div class="input-block">
-        <label for="date" class="inputLabel">Creation
-            Date:</label>
-        <input name="date" class="postDateInput" type="datetime-local" id="dateTimeInput" value="">
-    </div>
-    <div class="input-block">
-        <label for="tags" class="inputLabel">Tags:</label>
-        <input name="tags" class="postTagsInput" type="text" placeholder="Gardening, Flowers, Free time activity"
-            required>
-    </div>
-    <input id="publishButton" type="submit" value="Publish">
+<form id="input-block" method="post" action="">
+    <input type="text" name="title" placeholder="Title" required>
+    <textarea name="content" placeholder="Content" required></textarea>
+    <input type="text" name="category" placeholder="Category" required>
+    <input type="submit" value="Publish">
 </form>

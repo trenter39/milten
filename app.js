@@ -33,9 +33,10 @@ const app = express();
 app.engine('hbs', handlebars.engine);
 app.set('view engine', 'hbs');
 app.set('views', './views');
+
 app.use(express.json());
 app.use(express.urlencoded());
-app.use('/posts', postsRouter);
+app.use('/api/posts', postsRouter);
 app.use(express.static('public'));
 
 app.get('/', (req, res) => res.redirect('/home'));
@@ -44,7 +45,7 @@ app.get('/home', async (req, res) => {
     try {
         const posts = await fetchPosts({ mode: 'frontend' });
         res.render('home', {
-            title: 'Home',
+            title: 'Home - Murny',
             script: '<script src="/scripts/home.js"></script>',
             posts
         });
@@ -60,7 +61,7 @@ app.get('/post/:id', async (req, res) => {
         const post = await fetchPost(id);
         const comments = await fetchComments(id);
         res.render('post', {
-            title: `${post.title}`,
+            title: `${post.title} - Murny`,
             comments,
             post
         });
@@ -70,12 +71,18 @@ app.get('/post/:id', async (req, res) => {
     }
 });
 
+app.get('/login', async (req, res) => {
+    res.render('login', {
+        title: `Login - Murny`
+    });
+})
+
 // app.get('/admin', authMiddleware, async (req, res) => {
 app.get('/admin', async (req, res) => {
     try {
         const posts = await fetchPosts({ mode: 'frontend' });
         res.render('admin', {
-            title: 'Admin Home',
+            title: 'Admin Home - Murny',
             script: `<script src="/scripts/home.js"></script>
                 <script src="/scripts/admin.js" ></script>`,
             posts
@@ -89,7 +96,7 @@ app.get('/admin', async (req, res) => {
 // app.get('/new', authMiddleware, (req, res) => {
 app.get('/new', (req, res) => {
     res.render('new', {
-        title: 'Create Post',
+        title: 'Create Post - Murny',
         script: '<script src="/scripts/create.js"></script>',
     });
 });
@@ -100,7 +107,7 @@ app.get('/update/:id', async (req, res) => {
         const { id } = req.params;
         const post = await fetchPost(id);
         res.render('update', {
-            title: 'Update Post',
+            title: 'Update Post - Murny',
             script: '<script src="/scripts/update.js"></script>',
             post
         });

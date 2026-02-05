@@ -1,11 +1,10 @@
-const sortSelect = document.getElementById('sortSelect');
-const postList = document.getElementById('postList');
-const searchInput = document.getElementById('searchInput');
-const searchButton = document.getElementById('searchButton');
-const clearSearch = document.getElementById("clearSearchButton");
-const noResults = document.getElementById("noResults");
-const resultText = document.getElementById('resultText');
-const postHeaders = document.querySelectorAll('.postHeading');
+const sortSelect = document.getElementById('sort-select');
+const postList = document.getElementById('post-list');
+const searchInput = document.getElementById('search-input');
+const searchButton = document.getElementById('search-button');
+const clearSearch = document.getElementById("clear-search-button");
+const noResults = document.getElementById("no-results");
+const resultText = document.getElementById('result-text');
 
 sortSelect.addEventListener("change", () => {
     const posts = Array.from(postList.querySelectorAll('.post'));
@@ -13,9 +12,7 @@ sortSelect.addEventListener("change", () => {
         const dateA = new Date(a.dataset.date);
         const dateB = new Date(b.dataset.date);
 
-        return sortSelect.value === "newest"
-            ? dateB - dateA
-            : dateA - dateB;
+        return sortSelect.value === "newest" ? dateB - dateA : dateA - dateB;
     });
 
     posts.forEach(post => postList.appendChild(post));
@@ -27,8 +24,9 @@ searchButton.addEventListener('click', () => {
     let found = false;
 
     posts.forEach(post => {
-        const header = post.querySelector(".postHeading");
+        const header = post.querySelector(".post-title");
         if (!header) return;
+
         const title = header.textContent.toLowerCase();
         if (title.includes(query)) {
             post.style.display = "";
@@ -37,7 +35,9 @@ searchButton.addEventListener('click', () => {
             post.style.display = "none";
         }
     });
-    if (found) { noResults.style.display = "none"; } else {
+    if (found) {
+        noResults.style.display = "none";
+    } else {
         noResults.style.display = "block";
         resultText.textContent = `No posts found for "${query}"!`;
     }

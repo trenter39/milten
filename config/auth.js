@@ -2,6 +2,7 @@ import base64 from 'base-64';
 
 function decodeCredentials(authHeader) {
     if(!authHeader.startsWith('Basic ')) return ['', ''];
+    
     try {
         const base64Credentials = authHeader.split(' ')[1];
         const decoded = base64.decode(base64Credentials);

@@ -1,23 +1,11 @@
-<div id="navRow">
+<div id="nav-row">
     <h1>Update post</h1>
     <h1><a href="../admin">Home</a></h1>
 </div>
-<form id="inputs" method="put" action="">
-    <input name="title" class="postTitleInput" type="text" placeholder="Title" value="{{post.title}}" required>
-    <textarea name="content" class="postContentInput" placeholder="Content" required>{{post.content}}</textarea>
-    <input name="category" class="postCategoryInput" type="text" placeholder="Category" value="{{post.category}}"
-        required>
-    <div class="input-block">
-        <label for="date" class="inputLabel">Creation
-            Date:</label>
-        <input name="date" class="postDateInput" type="datetime-local" id="dateTimeInput"
-            value="{{ formatDateInput post.createdAt}}">
-    </div>
-    <div class="input-block">
-        <label for="tags" class="inputLabel">Tags:</label>
-        <input name="tags" class="postTagsInput" type="text" placeholder="Gardening, Flowers, Free time activity"
-            value="{{tagsFormat post.tags}}" required>
-    </div>
-    <input id="updateButton" type="submit" value="Update">
+<form id="input-block" method="put" action="">
+    <input name="title" type="text" placeholder="Title" value="{{post.title}}" required>
+    <textarea name="content" placeholder="Content" required>{{post.content}}</textarea>
+    <input name="category" type="text" placeholder="Category" value="{{post.category}}" required>
+    <input type="submit" value="Update">
     <input name="id" type="hidden" value="{{post.id}}">
 </form>

@@ -1,31 +1,31 @@
-<div id="navRow">
-    <h1 id="postHeading">{{post.title}}</h1>
+<div id="nav-row">
+    <h1 id="post-title">{{post.title}}</h1>
     <h1><a href="../home">Home</a></h1>
 </div>
-<h2 id="postDate">{{post.category}} | {{formatDate post.createdAt}}</h2>
-<p id="postContent">
+<h2 id="post-date">{{post.category}} | {{formatDate post.createdAt}}</h2>
+<p id="post-content">
     {{{trimContent post.content}}}
 </p>
-<div id="commentSection">
-    <h1 id="commentsHeader">Comments</h1>
-    <form action="/post/{{post._id}}/comment" method="POST" id="commentForm">
-        <div id="sendCommentSection">
-            <input type="text" name="commentAuthor" id="commentAuthorInput" placeholder="Your name" required>
-            <input type="text" name="commentContent" id="commentContentInput" placeholder="Comment?" required>
-            <button type="submit" id="sendCommentButton">Send</button>
+<div id="comment-section">
+    <h1 id="comments-section">Comments</h1>
+    <form action="/post/{{post._id}}/comment" method="POST" id="comment-form">
+        <div id="send-comment-section">
+            <input type="text" name="comment-author" id="comment-author-input" placeholder="Your name" required>
+            <input type="text" name="comment-content" id="comment-content-input" placeholder="Comment" required>
+            <button type="submit" id="send-comment-button">Send</button>
         </div>
     </form>
     {{#if comments}}
     {{#each comments}}
-    <div class="commentBlock">
-        <div class="commentHeader">
+    <div class="comment-block">
+        <div class="comment-header">
             <h3>{{this.author}}</h3>
-            <span class="commentTime">{{formatDate this.createdAt}}</span>
+            <span class="comment-time">{{formatDate this.createdAt}}</span>
         </div>
-        <p class="commentContent">{{this.content}}</p>
+        <p class="comment-content">{{this.content}}</p>
     </div>
     {{/each}}
     {{else}}
-    <p id="noCommentsParagraph">No comments yet. Be the first to start the conversation!</p>
+    <p id="no-comment-paragraph">No comments yet. Be the first to start the conversation!</p>
     {{/if}}
 </div>
