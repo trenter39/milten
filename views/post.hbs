@@ -1,26 +1,39 @@
-<div id="nav-row">
-    <h1 id="post-title">{{post.title}}</h1>
-    <h1><a href="../home">Home</a></h1>
+<h1 id="post-title">{{post.title}}</h1>
+<div id="post-meta">
+    <span>{{post.category}} | {{formatDate post.createdAt}}</span>
 </div>
-<h2 id="post-date">{{post.category}} | {{formatDate post.createdAt}}</h2>
 <p id="post-content">
     {{{trimContent post.content}}}
 </p>
-<div id="comment-section">
+<div id="comment-section" data-post-id="{{post.id}}">
     <h1 id="comments-section">Comments</h1>
-    <form action="/post/{{post._id}}/comment" method="POST" id="comment-form">
+    {{#if user}}
+    <form id="comment-form">
         <div id="send-comment-section">
-            <input type="text" name="comment-author" id="comment-author-input" placeholder="Your name" required>
             <input type="text" name="comment-content" id="comment-content-input" placeholder="Comment" required>
             <button type="submit" id="send-comment-button">Send</button>
         </div>
     </form>
+    {{else}}
+    <p id="comment-login-prompt">Please <a href="/login">log in</a> to leave a comment. You can still read comments
+        below.</p>
+    {{/if}}
     {{#if comments}}
     {{#each comments}}
-    <div class="comment-block">
+    <div class="comment-block" data-comment-id="{{this.id}}" data-comment-user-id="{{this.userID}}">
         <div class="comment-header">
             <h3>{{this.author}}</h3>
             <span class="comment-time">{{formatDate this.createdAt}}</span>
+            {{#if ../user}}
+            <div class="comment-actions">
+                {{#if (eq this.userID ../user.id)}}
+                <button type="button" class="comment-edit-btn" title="Edit comment">Edit</button>
+                {{/if}}
+                {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
+                <button type="button" class="comment-delete-btn" title="Delete comment">Delete</button>
+                {{/if}}
+            </div>
+            {{/if}}
         </div>
         <p class="comment-content">{{this.content}}</p>
     </div>

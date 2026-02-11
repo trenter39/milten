@@ -1,30 +1,36 @@
-import base64 from 'base-64';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from './conf.js';
 
-function decodeCredentials(authHeader) {
-    if(!authHeader.startsWith('Basic ')) return ['', ''];
-    
+export function verifyToken(req, res, next) {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
     try {
-        const base64Credentials = authHeader.split(' ')[1];
-        const decoded = base64.decode(base64Credentials);
-        const [username, password] = decoded.split(':');
-        return [username, password];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+        next();
     } catch (err) {
-        return ['', ''];
+        return res.status(403).json({ message: 'Invalid or expired token' });
     }
 }
 
-export default function authMiddleware(req, res, next) {
-    const [username, password] = decodeCredentials(
-        req.headers.authorization || ''
-    );
-
-    const validUser = 'admin';
-    const validPass = 'admin';
-
-    if(username === validUser && password === validPass) {
-        return next();
-    }
-
-    res.set('WWW-Authenticate', 'Basic realm="user_pages"');
-    res.status(401).send('Authentication required.');
+export function verifyTokenOptional(req, res, next) {
+    const token = req.cookies.token;
+    if (!token) return next();
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+    } catch (_) { }
+    next();
 }
+
+export function verifyAdmin(req, res, next) {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Authentication required' });
+    }
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Admin access required' });
+    }
+    next();
+}
+
+export default verifyToken;

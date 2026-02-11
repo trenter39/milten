@@ -7,5 +7,8 @@ export const {
     DB_PORT,
     DB_NAME,
     DB_USER,
-    DB_PASSWORD
+    DB_PASSWORD,
+    NODE_ENV,
+    JWT_SECRET,
+    JWT_EXPIRES_IN,
 } = process.env;

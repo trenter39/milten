@@ -1,0 +1,16 @@
+<div id="nav-row">
+    <h1><a href="/">Murny</a></h1>
+    <div class="action-captions">
+        {{#if isAuthenticated}}
+            {{#if isAdmin}}
+                <h2><a href="/new">Add post</a></h2>
+            {{/if}}
+            <h2><a id="user-account" href="/account">{{user.firstName}}</a></h2>
+        {{else}}
+            <div class="auth-buttons">
+                <a href="/login">Sign in</a>
+                <a href="/register" style="background: #001D3D; color: #fff">Sign up</a>
+            </div>
+        {{/if}}
+    </div>
+</div>

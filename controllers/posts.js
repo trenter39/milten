@@ -11,6 +11,46 @@ export async function fetchPost(id) {
     return result[0];
 }
 
+export async function queryPostsWithSearchAndPagination({ term = null, page = 1, pageSize = 15 } = {}) {
+    page = Math.max(1, parseInt(page) || 1);
+    pageSize = Math.max(1, parseInt(pageSize) || 15);
+    const offset = (page - 1) * pageSize;
+
+    let whereClause = '';
+    let queryParams = [];
+    
+    if (term && typeof term === 'string' && term.trim().length > 0) {
+        const searchTerm = term.trim().substring(0, 255);
+        const likeTerm = `%${searchTerm}%`;
+        whereClause = 'where title like ? or content like ? or category like ?';
+        queryParams = [likeTerm, likeTerm, likeTerm];
+    }
+
+    const postsQuery = `
+        select * from posts
+        ${whereClause}
+        order by createdAt desc
+        limit ? offset ?
+    `;
+    const [posts] = await db.query(postsQuery, [...queryParams, pageSize, offset]);
+
+    const countQuery = `
+        select count(*) as total from posts
+        ${whereClause}
+    `;
+    const [countResult] = await db.query(countQuery, queryParams);
+    const totalCount = countResult[0].total;
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+    return {
+        posts,
+        totalCount,
+        page,
+        pageSize,
+        totalPages
+    };
+}
+
 export async function fetchPosts({ mode = "api" } = {}) {
     let sql;
     (mode === "frontend" ?
@@ -48,18 +88,23 @@ export async function getPosts(req, res) {
 
 export async function getPostsTerm(req, res) {
     try {
-        const searchTerm = req.query.term;
-        const likeTerm = `%${searchTerm}%`;
+        const searchTerm = req.query.term || req.query.q || null;
+        const page = req.query.page || 1;
+        
+        const result = await queryPostsWithSearchAndPagination({ 
+            term: searchTerm, 
+            page 
+        });
 
-        const [result] = await db.query(
-            `select * from posts
-            where title like ? or
-            content like ? or
-            category like ?`,
-            [likeTerm, likeTerm, likeTerm]
-        );
-
-        return res.json(result);
+        return res.json({
+            posts: result.posts,
+            pagination: {
+                page: result.page,
+                pageSize: result.pageSize,
+                totalCount: result.totalCount,
+                totalPages: result.totalPages
+            }
+        });
     } catch (err) {
         handleError(res, err);
     }
@@ -114,7 +159,7 @@ export async function updatePost(req, res) {
         await db.query(
             `update posts
             set
-            title = coalescce(?, title),
+            title = coalesce(?, title),
             content = coalesce(?, content),
             category = coalesce(?, category)
             where id = ?`,

@@ -14,7 +14,7 @@ document.getElementById('input-block').addEventListener('submit', async (event) 
         if (!response.ok) {
             throw new Error('Failed to create post');
         } else {
-            window.location.href = '/admin';
+            window.location.href = '/';
         }
     } catch (err) {
         console.error(err);

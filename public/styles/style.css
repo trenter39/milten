@@ -5,45 +5,87 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+    --primary-color: #4a90e2;
+    --accent-color: #001D3D;
+    --text-color: #333;
+    --bg-color: #f4f7f6;
+}
+
 body {
     background: white;
     color: black;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     min-height: 100vh;
 }
 
+a {
+    text-decoration: none;
+}
+
 #container {
-    max-width: 800px;
+    max-width: 650px;
     width: 100%;
-    padding: 0px;
+    padding: 10px 20px 20px;
     background: white;
 }
 
 #nav-row,
-#sub-row,
-#post-filter {
+#sub-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
+#nav-row {
+    width: 100%;
+    padding: 8px 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #EDEDED;
+}
+
+#nav-row h1 a {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-size: 24px;
+    color: black;
+    transition: color 0.3s;
+}
+
+#user-account {
+    color: #615c5c;
+    font-size: 20px;
+}
+
+.action-captions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.action-captions h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+}
+
 #post-filter {
+    display: flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
     margin-bottom: 20px;
+    width: 100%;
 }
 
-#post-filter > div {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-width: 375px;
-    gap: 8px;
+#post-filter input {
+    flex-grow: 1;
 }
 
-#nav-row a,
 #sub-row a {
     text-decoration: none;
     font-size: 24px;
@@ -53,6 +95,42 @@ body {
 
 #nav-row a:hover,
 #sub-row a:hover {
+    color: black;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 3px;
+    font-weight: 400;
+}
+
+.auth-buttons a {
+    font-size: 16px;
+    padding: 8px 12px;
+    color: #001D3D;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    display: inline-block;
+}
+
+.auth-buttons a:hover {
+    background: #e9e9f6;
+    color: #000;
+}
+
+#logout-button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #615c5c;
+    cursor: pointer;
+    transition: color 0.3s;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#logout-button:hover {
     color: black;
 }
 
@@ -67,36 +145,26 @@ body {
     cursor: pointer;
 }
 
-#container h1,
-#post-title {
-    font-size: 28px;
-    padding: 20px 0;
+#post-meta {
+    text-align: left;
+    color: #615c5c;
+    font-size: 15px;
+    white-space: nowrap;
+    margin-bottom: 20px;
+}
+
+#container h1 {
+    font-size: 22px;
 }
 
 #post-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
-.post {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f9f9f9;
-    padding: 20px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.post:hover {
-    background-color: #f1f1f1;
-    transform: translateY(-4px);
-}
-
-.post-title {
-    margin-bottom: 5px;
+#post-title {
+    margin-bottom: 10px;
 }
 
 .post-date,
@@ -114,13 +182,18 @@ body {
 }
 
 #post-content {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.8;
     text-align: justify;
+    margin-bottom: 20px;
+}
+
+#comments-section {
+    margin-bottom: 10px;
 }
 
 #comments-header {
-    font-size: 24px;
+    font-size: 18px;
     padding-bottom: 8px;
 }
 
@@ -155,6 +228,37 @@ body {
     color: #888;
 }
 
+.comment-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.comment-edit-btn,
+.comment-delete-btn {
+    padding: 4px 10px;
+    font-size: 13px;
+    height: auto;
+}
+
+.comment-edit-form {
+    margin-top: 8px;
+}
+
+.comment-edit-form .comment-edit-input {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.comment-edit-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#comment-login-prompt {
+    margin-bottom: 16px;
+    color: #555;
+}
+
 .comment-content {
     margin: 0;
     font-size: 16px;
@@ -167,10 +271,11 @@ body {
 }
 
 input[type="text"],
+input[type="email"],
 input[type="password"],
 textarea {
     padding: 10px 10px 10px 15px;
-    font-size: 18px;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #fff;
@@ -179,6 +284,10 @@ textarea {
 
 input[type="text"]:hover,
 input[type="text"]:focus,
+input[type="email"]:hover,
+input[type="email"]:focus,
+input[type="password"]:hover,
+input[type="password"]:focus,
 textarea:hover,
 textarea:focus {
     border-color: black;
@@ -186,22 +295,13 @@ textarea:focus {
 }
 
 textarea {
+    resize: vertical;
+    overflow: auto;
     line-height: 1.6;
 }
 
 #send-comment-section {
     margin-bottom: 16px;
-}
-
-#search-input {
-    flex: 1;
-    height: 45px;
-}
-
-.input-block {
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 .input-label {
@@ -217,17 +317,54 @@ textarea {
     min-height: 200px;
 }
 
-#input-block {
+#input-block,
+.auth-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin: auto;
+}
+
+.auth-form {
+    max-width: 400px;
+}
+
+#input-block h2,
+.auth-form h2 {
+    margin-bottom: 10px;
+}
+
+#input-block {
+    height: 80vh;
+    box-sizing: border-box;
+}
+
+#input-block textarea {
+    flex-grow: 1;
+    resize: none;
+    width: 100%;
+    max-height: 300px;
+    box-sizing: border-box;
+}
+
+#input-block input {
+    flex-shrink: 0;
+}
+
+.form-error {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #f3b6b6;
+    background: #fff1f1;
+    color: #7a0015;
+    font-size: 16px;
 }
 
 button,
 input[type="submit"] {
     cursor: pointer;
-    height: 50px;
-    font-size: 18px;
+    padding: 10px 12px;
+    font-size: 16px;
     background-color: white;
     border-radius: 8px;
     border: 1px solid #ccc;
@@ -239,11 +376,9 @@ input[type="submit"]:hover {
     border-color: black;
 }
 
-#search-button,
-#clear-search-button,
 #send-comment-button {
     width: 100px;
-    height: 45px;
+    padding: 10px 12px;
 }
 
 .delete-button {
@@ -266,7 +401,7 @@ input[type="submit"]:hover {
     cursor: pointer;
     color: #615c5c;
     display: flex;
-    gap: 20px;
+    gap: 15px;
     font-size: 16px;
     align-items: center;
     transition: color 0.3s;
@@ -286,7 +421,7 @@ input[type="submit"]:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
+    padding: 8px 0;
 }
 
 .confirm-delete-btn,
@@ -305,17 +440,321 @@ input[type="submit"]:hover {
     color: black;
 }
 
-@media (max-width: 725px) {
-    #post-filter {
-        flex-direction: column;
-        align-items: stretch;
-    }
+.account-page {
+    width: 100%;
+}
 
-    #post-filter > div {
-        width: 100%;
-    }
+.account-page h1 {
+    margin-bottom: 10px;
+    color: #001D3D;
+}
 
-    #sort-select {
-        width: 100%;
-    }
+.card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.card h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+    color: #001D3D;
+}
+
+.profile-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.profile-row .label {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.profile-row .value {
+    font-size: 16px;
+    color: #000;
+    font-weight: 500;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.comment-row {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 12px;
+    transition: background 0.2s ease;
+}
+
+.comment-row:last-child {
+    border-bottom: none;
+}
+
+.comment-row:hover {
+    background-color: #fafafa;
+    border-radius: 4px;
+}
+
+.comment-row a {
+    display: inline-block;
+    font-size: 14px;
+    color: #3D0C02;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 8px;
+    transition: color 0.2s ease;
+}
+
+.comment-row a:hover {
+    color: #2A0801;
+    text-decoration: underline;
+}
+
+.comment-preview {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.comment-time {
+    font-size: 14px;
+    color: #999;
+}
+
+.comments-card p {
+    text-align: center;
+    color: #999;
+    padding: 20px 0;
+    font-size: 15px;
+}
+
+#account-logout {
+    background-color: #001D3D;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    font-weight: 500;
+}
+
+#account-logout:hover {
+    background-color: #002d52;
+    transform: translateY(-2px);
+}
+
+#admin-users {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#admin-users thead {
+    background-color: #001D3D;
+    border-bottom: 1px solid #eee;
+}
+
+#admin-users th {
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+#admin-users td {
+    padding: 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 15px;
+    color: #555;
+}
+
+#admin-users tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#admin-users tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.delete-user-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    font-weight: 500;
+}
+
+.delete-user-btn:hover:not(:disabled) {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+.delete-user-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#admin-users tbody tr td {
+    vertical-align: middle;
+}
+
+.confirm-delete {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.confirm-delete-user,
+.cancel-delete-user {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+}
+
+.confirm-delete-user {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.confirm-delete-user:hover {
+    background-color: #c0392b;
+}
+
+.cancel-delete-user {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.cancel-delete-user:hover {
+    background-color: #7f8c8d;
+}
+
+#post-list {
+    padding: 0;
+}
+
+.post {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #e0e0e0; 
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: default;
+}
+
+.post-link {
+    display: block;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+}
+
+.post-title {
+    font-size: 18px;
+    color: black;
+    margin: 0 0 5px 0;
+    padding: 0;
+    font-weight: 500;
+}
+
+.menu-wrapper {
+    position: relative;
+    margin-left: 12px;
+    flex-shrink: 0;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: #615c5c;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.menu-button:hover {
+    background: #f5f5f5;
+    color: #000;
+}
+
+.menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 32px;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    border-radius: 8px;
+    min-width: 120px;
+    z-index: 20;
+}
+
+.menu a,
+.menu button {
+    display: block;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+}
+
+.menu a:hover,
+.menu button:hover {
+    background: #f7f7f7;
+    color: #000;
+}
+
+.menu-wrapper:hover .menu {
+    display: block;
+}
+
+.post:hover {
+    background: transparent;
+    transform: none;
 }

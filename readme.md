@@ -3,7 +3,7 @@
 Personal blogging platform built with **Node.js**, **Express**, **Handlebars** and **MySQL**. This project includes both the **REST API** for managing blog content and a simple **frontend** for creating, editing and viewing posts
 
 > [!NOTE]
-> This project has a `Basic Authentication` (with login and password: admin). For the best experience open the site in `Incognito/Private Mode` to avoid browser caching issues with login credentials
+> This project uses **JWT authentication stored in httpOnly cookies** (register a user, then log in).
 
 ## Setup Instructions
 1. Clone the repository
@@ -37,9 +37,21 @@ create table comments (
     postID int not null,
     author varchar(100) not null,
     content text not null,
+    userID int null,
     createdAt DATETIME not null default current_timestamp,
     updatedAt DATETIME not null default current_timestamp on update current_timestamp,
     foreign key (postID) references posts(id) on delete cascade
+);
+
+create table users (
+    id int primary key auto_increment,
+    email varchar(100) not null unique,
+    first_name varchar(150) not null,
+    last_name varchar(150) not null,
+    passwordHash varchar(255) not null,
+    createdAt DATETIME not null default current_timestamp,
+    updatedAt DATETIME not null default current_timestamp on update current_timestamp,
+    role enum('user', 'admin')
 );
 ```
 
@@ -51,6 +63,7 @@ DB_PORT=3306
 DB_NAME=personal_blog
 DB_USER=root
 DB_PASSWORD=password
+JWT_SECRET=change_me_to_a_long_random_secret
 ```
 
 5. Start the server via **node**

@@ -1,0 +1,98 @@
+<div class="account-page">
+    <h1>Your Account</h1>
+
+    <section class="card profile-card">
+        <h2>Profile Information</h2>
+        <div class="profile-row">
+            <div class="label">First name</div>
+            <div class="value">{{profile.firstName}}</div>
+        </div>
+        <div class="profile-row">
+            <div class="label">Last name</div>
+            <div class="value">{{profile.lastName}}</div>
+        </div>
+        <div class="profile-row">
+            <div class="label">Email address</div>
+            <div class="value">{{profile.email}}</div>
+        </div>
+    </section>
+
+    <section class="card comments-card">
+        <h2>Your Comments</h2>
+        {{#if comments.length}}
+            <div class="comments-list">
+                {{#each comments}}
+                    <div class="comment-row">
+                        <a href="/post/{{this.postID}}" class="small">{{this.postTitle}}</a>
+                        <div class="comment-preview">{{this.preview}}</div>
+                        <div class="comment-time" data-time="{{this.createdAt}}">{{this.createdAt}}</div>
+                    </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <p>You haven't written any comments yet.</p>
+        {{/if}}
+    </section>
+
+    <section class="card logout-card">
+        <h2>Account Actions</h2>
+        <button id="account-logout" class="primary">Logout</button>
+    </section>
+
+    {{#if isAdmin}}
+    <section class="card admin-card">
+        <h2>Admin: Manage Users</h2>
+        {{#if users.length}}
+            <table id="admin-users">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                        <tr>
+                            <td>{{this.firstName}} {{this.lastName}}</td>
+                            <td>{{this.email}}</td>
+                            <td>{{this.role}}</td>
+                            <td>
+                                <button class="delete-user-btn" data-id="{{this.id}}"
+                                {{#if (eq ../user.id this.id)}}
+                                    data-self="true" disabled title="You cannot delete your own account"
+                                {{/if}}>Delete</button>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        {{else}}
+            <p>No users found.</p>
+        {{/if}}
+    </section>
+    {{/if}}
+</div>
+
+<script>
+(function(){
+    function timeAgo(iso){
+        const d = new Date(iso);
+        const now = new Date();
+        const sec = Math.floor((now - d) / 1000);
+        if (sec < 60) return sec + ' seconds ago';
+        const min = Math.floor(sec / 60);
+        if (min < 60) return min + ' minutes ago';
+        const hr = Math.floor(min / 60);
+        if (hr < 24) return hr + ' hours ago';
+        const day = Math.floor(hr / 24);
+        if (day < 30) return day + ' days ago';
+        return d.toLocaleDateString();
+    }
+    document.querySelectorAll('.comment-time').forEach(element => {
+        const timeDate = element.dataset.time;
+        if (timeDate) element.textContent = timeAgo(timeDate);
+    });
+})();
+</script>

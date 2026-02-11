@@ -1,4 +1,5 @@
 import express from 'express';
+import verifyToken from '../config/auth.js';
 import {
     getComments,
     getComment,
@@ -7,12 +8,12 @@ import {
     deleteComment
 } from '../controllers/comments.js';
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.get('/', getComments);
 router.get('/:commentID', getComment);
-router.post('/', createComment);
-router.put('/:commentID', updateComment);
-router.delete('/:commentID', deleteComment);
+router.post('/', verifyToken, createComment);
+router.put('/:commentID', verifyToken, updateComment);
+router.delete('/:commentID', verifyToken, deleteComment);
 
 export default router;

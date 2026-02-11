@@ -1,4 +1,5 @@
 import express from 'express';
+import verifyToken, { verifyAdmin } from '../config/auth.js';
 import {
     getPosts,
     getPost,
@@ -11,11 +12,11 @@ import commentRouter from './comments.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => req.query.term ? getPostsTerm(req, res) : getPosts(req, res));
+router.get('/', (req, res) => req.query.term || req.query.q ? getPostsTerm(req, res) : getPosts(req, res));
 router.get('/:postID', getPost);
-router.post('/', createPost);
-router.put('/:postID', updatePost);
-router.delete('/:postID', deletePost);
+router.post('/', verifyToken, verifyAdmin, createPost);
+router.put('/:postID', verifyToken, verifyAdmin, updatePost);
+router.delete('/:postID', verifyToken, verifyAdmin, deletePost);
 
 router.use('/:postID/comments', commentRouter);
 
