@@ -1,15 +1,16 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './conf.js';
+import { unauthorized, forbidden } from '../utils/APIHelper.js';
 
 export function verifyToken(req, res, next) {
     const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+    if (!token) return unauthorized(res, 'Unauthorized');
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
     } catch (err) {
-        return res.status(403).json({ message: 'Invalid or expired token' });
+        return forbidden(res, 'Invalid or expired token');
     }
 }
 
@@ -25,10 +26,10 @@ export function verifyTokenOptional(req, res, next) {
 
 export function verifyAdmin(req, res, next) {
     if (!req.user) {
-        return res.status(401).json({ message: 'Authentication required' });
+        return unauthorized(res, 'Authentication required');
     }
     if (req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Admin access required' });
+        return forbidden(res, 'Admin access required');
     }
     next();
 }

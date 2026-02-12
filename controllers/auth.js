@@ -6,6 +6,15 @@ import {
     JWT_EXPIRES_IN,
     NODE_ENV
 } from '../config/conf.js';
+import {
+    ok,
+    created,
+    noContent,
+    badRequest,
+    unauthorized,
+    conflict,
+    internalServerError
+} from "../utils/APIHelper.js";
 
 function setAuthCookie(res, token) {
     const maxAge = 1000 * 60 * 60 * 24;
@@ -30,10 +39,10 @@ export async function register(req, res) {
         const { firstName, lastName, email, password } = req.body;
 
         if (email.length < 3 || email.length > 50) {
-            return res.status(400).json({ error: 'Email must be 3-50 characters.' });
+            return badRequest(res, 'Email must be 3-50 characters');
         }
         if (password.length < 6 || password.length > 30) {
-            return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+            return badRequest(res, 'Password must be at least 6 characters');
         }
 
         const [existing] = await db.query(
@@ -41,19 +50,25 @@ export async function register(req, res) {
             [email]
         );
         if (existing.length) {
-            return res.status(409).json({ error: 'Email already exists.' });
+            return conflict(res, 'Email already exists');
         }
 
         const passwordHash = await bcrypt.hash(password, 12);
-        await db.query(
+        const [result] = await db.query(
             'insert into users(first_name, last_name, email, passwordHash, role) values(?, ?, ?, ?, ?)',
             [firstName, lastName, email, passwordHash, 'user']
         );
 
-        return res.status(201).json({ message: 'User registered sucessfully' });
+        return created(res, {
+            message: 'User registered sucessfully',
+            id: result.insertId,
+            firstName: result.first_name,
+            lastName: result.last_name,
+            email: result.email,
+            role: 'user'
+        });
     } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Registration failed.' });
+        return internalServerError(res, err);
     }
 }
 
@@ -62,7 +77,7 @@ export async function login(req, res) {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ error: 'Missing email or password.' });
+            return badRequest(res, 'Missing email or password');
         }
 
         const [rows] = await db.query(
@@ -73,26 +88,28 @@ export async function login(req, res) {
             [email]
         );
 
-        if (!rows.length) {
-            return res.status(401).json({ error: 'Invalid credentials.' });
-        }
+        if (!rows.length) return unauthorized(res, 'Invalid credentials');
 
         const user = rows[0];
         const valid = await bcrypt.compare(password, user.passwordHash);
 
-        if (!valid) {
-            return res.status(401).json({ error: 'Invalid credentials.' });
-        }
+        if (!valid) return unauthorized(res, 'Invalid credentials');
 
         const token = jwt.sign(
-            { id: user.id, firstName: user.first_name,
-                lastName: user.last_name, email: user.email, role: user.role || 'user' },
+            {
+                id: user.id,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                email: user.email,
+                role: user.role
+            },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
 
         setAuthCookie(res, token);
-        res.status(200).json({
+
+        ok(res, {
             message: 'Login successful',
             user: {
                 id: user.id,
@@ -103,16 +120,15 @@ export async function login(req, res) {
             }
         });
     } catch (err) {
-        console.error('Login error:', err);
-        return res.status(500).json({ error: 'Login failed.' });
+        return internalServerError(res, err);
     }
 }
 
 export async function logout(req, res) {
     clearAuthCookie(res);
-    return res.status(204).send();
+    return noContent(res);
 }
 
 export async function me(req, res) {
-    return res.status(200).json({ user: req.user || null });
+    return ok(res, { user: req.user || null });
 }

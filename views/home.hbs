@@ -50,7 +50,7 @@
 
 {{#if pagination}}
     {{#if (gt pagination.totalPages 1)}}
-        <div id="pagination" style="margin: 30px 0; text-align: center;">
+        <div id="pagination">
             {{#if (gt pagination.page 1)}}
                 {{#if isSearch}}
                     <a href="/search?q={{query}}&page={{subtract pagination.page 1}}" class="pagination-link">Previous</a>

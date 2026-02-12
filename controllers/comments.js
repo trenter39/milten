@@ -1,5 +1,14 @@
 import db from '../config/db.js';
-import { handleError, validateID, badRequest } from '../utils/APIHelper.js';
+import {
+    validateID,
+    ok,
+    created,
+    noContent,
+    badRequest,
+    forbidden,
+    notFound,
+    internalServerError,
+} from '../utils/APIHelper.js';
 
 export async function fetchComments(postID) {
     const sql = `select * from comments where postID = ?`;
@@ -29,7 +38,7 @@ export async function getComment(req, res) {
     try {
         const postID = validateID(req.params.postID);
         const commentID = validateID(req.params.commentID);
-        if (!postID || !commentID) return badRequest(res);
+        if (!postID || !commentID) return badRequest(res, 'Invalid ID');
 
         const [rows] = await db.query(
             `select * from comments
@@ -37,43 +46,38 @@ export async function getComment(req, res) {
             [postID, commentID]
         );
 
-        if (!rows.length) {
-            return res.status(404).json({ error: "Comment wasn't found!" });
-        }
+        if (!rows.length) return notFound(res, "Comment wasn't found!");
 
-        return res.status(200).json(rows[0]);
+        return ok(res, rows[0]);
     } catch (err) {
-        return handleError(res, err);
+        return internalServerError(res, err);
     }
 }
 
 export async function getComments(req, res) {
     try {
         const postID = validateID(req.params.postID);
-        if (!postID) return badRequest(res);
+        if (!postID) return badRequest(res, 'Invalid ID');
 
         const comments = await fetchComments(postID);
-        if (!comments) {
-            return res.status(404).send("Comments weren't found!");
-        }
 
-        return res.status(200).json(comments);
+        if (!comments.length) return notFound(res, "Comments weren't found!");
+
+        return ok(res, comments);
     } catch (err) {
-        return handleError(res, err);
+        return internalServerError(res, err);
     }
 }
 
 export async function createComment(req, res) {
     try {
         const postID = validateID(req.params.postID);
-        if (!postID) return badRequest(res);
+        if (!postID) return badRequest(res, 'Invalid ID');
 
         const { content } = req.body;
-        if (!content || typeof content !== 'string' || !content.trim()) {
-            return res.status(400).json({ error: "Comment content is required." });
-        }
+        if (!content.trim()) return badRequest(res, "Comment content is required.");
 
-        const author = `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim() || req.user.email;
+        const author = `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim();
         const userID = req.user.id;
 
         const [checkRows] = await db.query(
@@ -81,9 +85,8 @@ export async function createComment(req, res) {
             where id = ?`,
             [postID]
         );
-        if (!checkRows.length) {
-            return res.status(404).json({ error: "Post wasn't found!" });
-        }
+
+        if (!checkRows.length) return notFound(res, "Post wasn't found!" );
 
         const [result] = await db.query(
             `insert into comments(postID, author, content, userID)
@@ -101,9 +104,9 @@ export async function createComment(req, res) {
         createdComment.createdAt = createdComment.createdAt.toISOString();
         createdComment.updatedAt = createdComment.updatedAt.toISOString();
 
-        return res.status(201).json(createdComment);
+        return created(res, createdComment);
     } catch (err) {
-        return handleError(res, err);
+        return internalServerError(res, err);
     }
 }
 
@@ -111,12 +114,10 @@ export async function updateComment(req, res) {
     try {
         const postID = validateID(req.params.postID);
         const commentID = validateID(req.params.commentID);
-        if (!postID || !commentID) return badRequest(res);
+        if (!postID || !commentID) return badRequest(res, 'Invalid ID');
 
         const { content } = req.body;
-        if (!content || typeof content !== 'string' || !content.trim()) {
-            return res.status(400).json({ error: "Comment content is required." });
-        }
+        if (!content.trim()) return badRequest(res, "Comment content is required.");
 
         const [selectRows] = await db.query(
             `select * from comments
@@ -124,19 +125,13 @@ export async function updateComment(req, res) {
             [commentID]
         );
 
-        if (!selectRows.length) {
-            return res.status(404).json({ error: "Comment wasn't found!" });
-        }
+        if (!selectRows.length) return notFound(res, "Comment wasn't found!");
 
         const currentComment = selectRows[0];
-        if (currentComment.postID !== postID) {
-            return res.status(400).json({ error: "Comment doesn't belong to the specified post!" });
-        }
+        if (currentComment.postID !== postID) return badRequest(res, "Comment doesn't belong to the specified post!");
 
         const commentUserID = currentComment.userID != null ? currentComment.userID : undefined;
-        if (commentUserID !== req.user.id) {
-            return res.status(403).json({ error: "You can only edit your own comments." });
-        }
+        if (commentUserID !== req.user.id) return forbidden(res, "You can only edit your own comments.");
 
         await db.query(
             `update comments set content = ? where id = ?`,
@@ -153,9 +148,9 @@ export async function updateComment(req, res) {
         updatedComment.createdAt = updatedComment.createdAt.toISOString();
         updatedComment.updatedAt = updatedComment.updatedAt.toISOString();
 
-        return res.status(200).json(updatedComment);
+        return ok(res, updatedComment);
     } catch (err) {
-        return handleError(res, err);
+        return internalServerError(res, err);
     }
 }
 
@@ -163,7 +158,7 @@ export async function deleteComment(req, res) {
     try {
         const postID = validateID(req.params.postID);
         const commentID = validateID(req.params.commentID);
-        if (!postID || !commentID) return badRequest(res);
+        if (!postID || !commentID) return badRequest(res, 'Invalid ID');
 
         const [checkResult] = await db.query(
             `select postID, userID from comments
@@ -171,25 +166,21 @@ export async function deleteComment(req, res) {
             [commentID]
         );
 
-        if (!checkResult.length) {
-            return res.status(404).json({ error: "Comment wasn't found!" });
-        }
+        if (!checkResult.length) return notFound(res, "Comment wasn't found!");
 
         const comment = checkResult[0];
-        if (comment.postID !== postID) {
-            return res.status(400).json({ error: "Comment doesn't belong to the specified post!" });
-        }
+        if (comment.postID !== postID) return badRequest(res, "Comment doesn't belong to the specified post!");
 
         const isOwner = comment.userID != null && comment.userID === req.user.id;
         const isAdmin = req.user.role === 'admin';
         if (!isOwner && !isAdmin) {
-            return res.status(403).json({ error: "You can only delete your own comments. Administrators may delete any comment." });
+            return forbidden(res, "You can only delete your own comments. Administrators may delete any comment.");
         }
 
         await db.query("delete from comments where id = ?", [commentID]);
 
-        return res.status(204).send();
+        return noContent(res);
     } catch (err) {
-        return handleError(res, err);
+        return internalServerError(res, err);
     }
 }
