@@ -147,9 +147,9 @@ export async function deletePost(req, res) {
     }
 }
 
-export async function queryPostsWithSearchAndPagination({ term = null, page = 1, pageSize = 5 } = {}) {
+export async function queryPostsWithSearchAndPagination({ term = null, page = 1, pageSize = 10 } = {}) {
     page = Math.max(1, parseInt(page) || 1);
-    pageSize = Math.max(1, parseInt(pageSize) || 5);
+    pageSize = Math.max(1, parseInt(pageSize) || 10);
     const offset = (page - 1) * pageSize;
 
     let whereClause = '';

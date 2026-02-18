@@ -22,17 +22,24 @@
     {{#each comments}}
     <div class="comment-block" data-comment-id="{{this.id}}" data-comment-user-id="{{this.userID}}">
         <div class="comment-header">
-            <h3>{{this.author}}</h3>
-            <span class="comment-time">{{formatDate this.createdAt}}</span>
-            {{#if ../user}}
-            <div class="comment-actions">
-                {{#if (eq this.userID ../user.id)}}
-                <button type="button" class="comment-edit-btn" title="Edit comment">Edit</button>
-                {{/if}}
-                {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
-                <button type="button" class="comment-delete-btn" title="Delete comment">Delete</button>
-                {{/if}}
+            <div>
+                <h3>{{this.author}}</h3>
+                <span class="comment-time">{{formatDate this.createdAt}}</span>
             </div>
+            {{#if ../user}}
+            {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
+            <div class="menu-wrapper">
+                <button class="menu-button" aria-label="Comment options">⋯</button>
+                <div class="menu" role="menu">
+                    {{#if (eq this.userID ../user.id)}}
+                    <button type="button" class="comment-edit-btn" role="menuitem">Edit</button>
+                    {{/if}}
+                    {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
+                    <button type="button" class="comment-delete-btn" role="menuitem">Delete</button>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
             {{/if}}
         </div>
         <p class="comment-content">{{this.content}}</p>

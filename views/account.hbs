@@ -34,45 +34,7 @@
         {{/if}}
     </section>
 
-    <section class="card logout-card">
-        <h2>Account Actions</h2>
-        <button id="account-logout" class="primary">Logout</button>
-    </section>
-
-    {{#if isAdmin}}
-    <section class="card admin-card">
-        <h2>Admin: Manage Users</h2>
-        {{#if users.length}}
-            <table id="admin-users">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each users}}
-                        <tr>
-                            <td>{{this.firstName}} {{this.lastName}}</td>
-                            <td>{{this.email}}</td>
-                            <td>{{this.role}}</td>
-                            <td>
-                                <button class="delete-user-btn" data-id="{{this.id}}"
-                                {{#if (eq ../user.id this.id)}}
-                                    data-self="true" disabled title="You cannot delete your own account"
-                                {{/if}}>Delete</button>
-                            </td>
-                        </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        {{else}}
-            <p>No users found.</p>
-        {{/if}}
-    </section>
-    {{/if}}
+    <button id="account-logout" class="primary">Logout</button>
 </div>
 
 <script>

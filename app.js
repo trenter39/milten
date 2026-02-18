@@ -87,7 +87,7 @@ app.get('/', verifyTokenOptional, async (req, res) => {
         const isAdmin = req.user?.role === 'admin';
 
         res.render('home', {
-            title: 'Home - Murny',
+            title: 'Home - Milten',
             script: `<script src="/scripts/home.js"></script>${isAdmin ? '<script src="/scripts/admin.js"></script>' : ''}`,
             posts: result.posts,
             pagination: {
@@ -126,7 +126,7 @@ app.get('/search', verifyTokenOptional, async (req, res) => {
         const isAdmin = req.user?.role === 'admin';
 
         res.render('home', {
-            title: query ? `Search: ${query} - Murny` : 'Search - Murny',
+            title: query ? `Search: ${query} - Milten` : 'Search - Milten',
             script: `<script src="/scripts/home.js"></script>${isAdmin ? '<script src="/scripts/admin.js"></script>' : ''}`,
             posts: result.posts,
             pagination: {
@@ -155,7 +155,7 @@ app.get('/post/:id', verifyTokenOptional, async (req, res) => {
         const isAuthenticated = !!req.user;
         const isAdmin = req.user?.role === 'admin';
         res.render('post', {
-            title: `${post.title} - Murny`,
+            title: `${post.title} - Milten`,
             script: '<script src="/scripts/post.js"></script>',
             comments,
             post,
@@ -173,7 +173,7 @@ app.get('/login', verifyTokenOptional, async (req, res) => {
     const isAuthenticated = !!req.user;
     const isAdmin = req.user?.role === 'admin';
     res.render('login', {
-        title: `Login - Murny`,
+        title: `Login - Milten`,
         script: '<script src="/scripts/login.js"></script>',
         isAuthenticated,
         isAdmin,
@@ -185,7 +185,7 @@ app.get('/register', verifyTokenOptional, async (req, res) => {
     const isAuthenticated = !!req.user;
     const isAdmin = req.user?.role === 'admin';
     res.render('register', {
-        title: `Register - Murny`,
+        title: `Register - Milten`,
         script: '<script src="/scripts/register.js"></script>',
         isAuthenticated,
         isAdmin,
@@ -197,7 +197,7 @@ app.get('/new', verifyToken, verifyAdmin, (req, res) => {
     const isAuthenticated = !!req.user;
     const isAdmin = req.user?.role === 'admin';
     res.render('new', {
-        title: 'Create Post - Murny',
+        title: 'Create Post - Milten',
         script: '<script src="/scripts/create.js"></script>',
         isAuthenticated,
         isAdmin,
@@ -212,7 +212,7 @@ app.get('/update/:id', verifyToken, verifyAdmin, async (req, res) => {
         const isAuthenticated = !!req.user;
         const isAdmin = req.user?.role === 'admin';
         res.render('update', {
-            title: 'Update Post - Murny',
+            title: 'Update Post - Milten',
             script: '<script src="/scripts/update.js"></script>',
             post,
             isAuthenticated,

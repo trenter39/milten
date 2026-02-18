@@ -8,8 +8,8 @@ Personal blogging platform built with **Node.js**, **Express**, **Handlebars** a
 ## Setup Instructions
 1. Clone the repository
 ```
-git clone https://github.com/trenter39/blogpost.git
-cd blogpost
+git clone https://github.com/trenter39/personal-blog.git
+cd personal-blog
 ```
 
 2. Install packages via **npm**
@@ -63,7 +63,9 @@ DB_PORT=3306
 DB_NAME=personal_blog
 DB_USER=root
 DB_PASSWORD=password
-JWT_SECRET=change_me_to_a_long_random_secret
+JWT_SECRET=random_secret
+JWT_EXPIRES_IN=1d
+NODE_ENV=production
 ```
 
 5. Start the server via **node**
@@ -71,6 +73,6 @@ JWT_SECRET=change_me_to_a_long_random_secret
 node app.js
 ```
 
-Now you can visit website via `http://localhost:8080/home` (and for admin panel: `http://localhost:8080/admin`) or check API ([API Documentation](https://github.com/trenter39/blogrestapi/blob/master/API.md)) using **Postman**.
+Now you can visit website via `http://localhost:8080/`.
 
 ![site preview](https://github.com/trenter39/personalblog/blob/master/media/preview.png)

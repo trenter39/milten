@@ -1,83 +1,84 @@
+<h2 style="margin-bottom: 20px;">All posts</h2>
 <div id="post-filter">
     <form action="/search" method="GET" id="search-form">
         <input type="text" name="q" id="search-input" placeholder="Search" value="{{query}}">
         <button type="submit" id="search-button">Search</button>
         {{#if isSearch}}
-            <a href="/" id="clear-search-link">Clear</a>
+        <a href="/" id="clear-search-link">Clear</a>
         {{/if}}
     </form>
 </div>
 
 {{#if isSearch}}
-    {{#if query}}
-        <div style="text-align: left; margin-bottom: 10px;">
-            <p>Showing {{pagination.totalCount}} result{{#if (ne pagination.totalCount 1)}}s{{/if}} for "{{query}}"</p>
-        </div>
-    {{/if}}
+{{#if query}}
+<div style="text-align: left; margin-bottom: 10px;">
+    <p>Showing {{pagination.totalCount}} result{{#if (ne pagination.totalCount 1)}}s{{/if}} for "{{query}}"</p>
+</div>
+{{/if}}
 {{/if}}
 
 <div id="post-list">
     {{#if posts}}
-        {{#each posts}}
-            <div class="post" data-date="{{formatDateData this.createdAt}}">
-                <a href="/post/{{this.id}}" class="post-link">
-                    <h2 class="post-title">{{this.title}}</h2>
-                    <span class="post-date">{{formatDate this.createdAt}}</span>
-                </a>
-                {{#if ../isAdmin}}
-                    <div class="menu-wrapper">
-                        <button class="menu-button" aria-label="Post options">⋯</button>
-                        <div class="menu" role="menu">
-                            <a href="/update/{{this.id}}" role="menuitem">Edit</a>
-                            <button class="menu-delete delete-button" data-id="{{this.id}}" role="menuitem">Delete</button>
-                        </div>
-                    </div>
-                {{/if}}
+    {{#each posts}}
+    <div class="post" data-date="{{formatDateData this.createdAt}}">
+        <a href="/post/{{this.id}}" class="post-link">
+            <h2 class="post-title">{{this.title}}</h2>
+            <span class="post-date">{{formatDate this.createdAt}}</span>
+        </a>
+        {{#if ../isAdmin}}
+        <div class="menu-wrapper">
+            <button class="menu-button" aria-label="Post options">⋯</button>
+            <div class="menu" role="menu">
+                <a href="/update/{{this.id}}" role="menuitem">Edit</a>
+                <button class="menu-delete delete-button" data-id="{{this.id}}" role="menuitem">Delete</button>
             </div>
-        {{/each}}
-    {{else}}
-        <div id="no-results" style="text-align: left; font-size: 18px;">
-            <span id="result-text">
-                {{#if isSearch}}
-                    No posts found for "{{query}}"!
-                {{else}}
-                    No posts found!
-                {{/if}}
-            </span>
         </div>
+        {{/if}}
+    </div>
+    {{/each}}
+    {{else}}
+    <div id="no-results" style="text-align: left; font-size: 18px;">
+        <span id="result-text">
+            {{#if isSearch}}
+            No posts found for "{{query}}"!
+            {{else}}
+            No posts found!
+            {{/if}}
+        </span>
+    </div>
     {{/if}}
 </div>
 
 {{#if pagination}}
-    {{#if (gt pagination.totalPages 1)}}
-        <div id="pagination">
-            {{#if (gt pagination.page 1)}}
-                {{#if isSearch}}
-                    <a href="/search?q={{query}}&page={{subtract pagination.page 1}}" class="pagination-link">Previous</a>
-                {{else}}
-                    <a href="/?page={{subtract pagination.page 1}}" class="pagination-link">Previous</a>
-                {{/if}}
-            {{/if}}
-
-            {{#each (range 1 pagination.totalPages)}}
-                {{#if (eq this ../pagination.page)}}
-                    <span class="pagination-current">{{this}}</span>
-                {{else}}
-                    {{#if ../isSearch}}
-                        <a href="/search?q={{../query}}&page={{this}}" class="pagination-link">{{this}}</a>
-                    {{else}}
-                        <a href="/?page={{this}}" class="pagination-link">{{this}}</a>
-                    {{/if}}
-                {{/if}}
-            {{/each}}
-
-            {{#if (lt pagination.page pagination.totalPages)}}
-                {{#if isSearch}}
-                    <a href="/search?q={{query}}&page={{add pagination.page 1}}" class="pagination-link">Next</a>
-                {{else}}
-                    <a href="/?page={{add pagination.page 1}}" class="pagination-link">Next</a>
-                {{/if}}
-            {{/if}}
-        </div>
+{{#if (gt pagination.totalPages 1)}}
+<div id="pagination">
+    {{#if (gt pagination.page 1)}}
+    {{#if isSearch}}
+    <a href="/search?q={{query}}&page={{subtract pagination.page 1}}" class="pagination-link">Previous</a>
+    {{else}}
+    <a href="/?page={{subtract pagination.page 1}}" class="pagination-link">Previous</a>
     {{/if}}
+    {{/if}}
+
+    {{#each (range 1 pagination.totalPages)}}
+    {{#if (eq this ../pagination.page)}}
+    <span class="pagination-current">{{this}}</span>
+    {{else}}
+    {{#if ../isSearch}}
+    <a href="/search?q={{../query}}&page={{this}}" class="pagination-link">{{this}}</a>
+    {{else}}
+    <a href="/?page={{this}}" class="pagination-link">{{this}}</a>
+    {{/if}}
+    {{/if}}
+    {{/each}}
+
+    {{#if (lt pagination.page pagination.totalPages)}}
+    {{#if isSearch}}
+    <a href="/search?q={{query}}&page={{add pagination.page 1}}" class="pagination-link">Next</a>
+    {{else}}
+    <a href="/?page={{add pagination.page 1}}" class="pagination-link">Next</a>
+    {{/if}}
+    {{/if}}
+</div>
+{{/if}}
 {{/if}}

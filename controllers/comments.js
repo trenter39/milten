@@ -11,7 +11,9 @@ import {
 } from '../utils/APIHelper.js';
 
 export async function fetchComments(postID) {
-    const sql = `select * from comments where postID = ?`;
+    const sql = `select * from comments
+        where postID = ?
+        order by createdAt desc`;
 
     const [result] = await db.query(sql, [postID]);
     if (!result.length) return null;

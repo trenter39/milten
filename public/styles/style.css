@@ -1,3 +1,4 @@
+/* VARIABLES & RESETS */
 * {
     margin: 0;
     padding: 0;
@@ -6,12 +7,20 @@
 }
 
 :root {
-    --primary-color: #4a90e2;
-    --accent-color: #001D3D;
-    --text-color: #333;
-    --bg-color: #f4f7f6;
+    --green-900: #132A13;
+    --green-500: #31572C;
+    --green-500: #4F772D;
+    --green-300: #90A955;
+    --pure-white: #ffffff;
+
+    --text-dark: #333;
+    --text-gray: #615c5c;
+    --border-light: #e0e0e0;
+    --border-lighter: #EDEDED;
+    --bg-light: #fafafa;
 }
 
+/* BASE STYLES */
 body {
     background: white;
     color: black;
@@ -25,6 +34,7 @@ a {
     text-decoration: none;
 }
 
+/* LAYOUT & CONTAINER */
 #container {
     max-width: 650px;
     width: 100%;
@@ -32,8 +42,8 @@ a {
     background: white;
 }
 
-#nav-row,
-#sub-row {
+/* NAVIGATION & HEADER */
+#nav-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -41,9 +51,13 @@ a {
 
 #nav-row {
     width: 100%;
-    padding: 8px 20px;
+    padding: 10px 20px;
     margin-bottom: 10px;
-    border-bottom: 1px solid #EDEDED;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 100;
 }
 
 #nav-row h1 a {
@@ -55,28 +69,70 @@ a {
     transition: color 0.3s;
 }
 
-#nav-row a:hover {
-    color: black;
-}
-
 #user-account {
-    color: #615c5c;
+    color: var(--text-gray);
     font-size: 20px;
 }
 
 .action-captions {
+    cursor: pointer;
+    color: var(--text-gray);
     display: flex;
-    gap: 15px;
+    gap: 3px;
+    font-size: 16px;
     align-items: center;
+    transition: color 0.3s;
 }
 
-.action-captions h2 {
-    margin: 0;
-    padding: 0;
-    font-size: 20px;
+.action-captions h3:hover {
+    color: var(--green-900);
 }
 
-#post-filter {
+.action-captions h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Auth buttons in navbar */
+.auth-buttons {
+    display: flex;
+    gap: 3px;
+    font-weight: 400;
+}
+
+.auth-buttons a,
+#create-post-button,
+#user-account {
+    font-size: 16px;
+    padding: 8px 12px;
+    color: black;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    display: inline-block;
+}
+
+#sign-up-button,
+#create-post-button {
+    background-color: var(--green-300);
+    color: var(--pure-white);
+}
+
+#sign-up-button:hover,
+#create-post-button:hover {
+    background-color: var(--green-500);
+    color: var(--pure-white);
+}
+
+#sign-in-button:hover,
+#user-account:hover,
+.comment-cancel-button:hover {
+    background-color: #eee;
+}
+
+/* SEARCH */
+
+#search-form {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -86,8 +142,12 @@ a {
     width: 100%;
 }
 
-#post-filter input {
+#search-form input {
     flex-grow: 1;
+}
+
+#search-form input:hover {
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
 
 #search-button,
@@ -95,57 +155,34 @@ a {
     padding: 10px 16px;
     font-size: 16px;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: white;
+    background-color: var(--green-300);
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
+    border: none;
+    color: var(--pure-white);
 }
 
 #search-button:hover,
-#clear-search-link:hover {
-    border-color: #4a90e2;
-    color: #4a90e2;
-    background-color: #f5f9ff;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+#send-comment-button:hover {
+    background-color: var(--green-500);
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
 
 #clear-search-link {
+    background-color: var(--pure-white);
+    color: black;
+    border: 1px solid var(--border-light);
     text-decoration: none;
-    color: #333;
     display: inline-block;
 }
 
-.auth-buttons {
-    display: flex;
-    gap: 3px;
-    font-weight: 400;
+#clear-search-link:hover {
+    border: 1px solid var(--green-300);
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
 
-.auth-buttons a {
-    font-size: 16px;
-    padding: 8px 12px;
-    color: #001D3D;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-    display: inline-block;
-}
-
-.auth-buttons a:hover {
-    background: #e9e9f6;
-    color: #000;
-}
-
-#post-meta {
-    text-align: left;
-    color: #615c5c;
-    font-size: 15px;
-    white-space: nowrap;
-    margin-bottom: 20px;
-}
-
+/* POST LIST & CONTENT */
 #container h1 {
     font-size: 22px;
 }
@@ -154,24 +191,57 @@ a {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding: 0;
+}
+
+.post {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 14px 18px;
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+.post:hover {
+    border: 1px solid var(--green-300);
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
+}
+
+.post-link {
+    display: block;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.post-title {
+    font-size: 18px;
+    color: black;
+    margin: 0 0 5px 0;
+    padding: 0;
+    font-weight: 500;
+}
+
+.post-date {
+    font-size: 16px;
+    color: var(--text-gray);
+    font-weight: normal;
+}
+
+#post-meta {
+    text-align: left;
+    color: var(--text-gray);
+    font-size: 15px;
+    white-space: nowrap;
+    margin-bottom: 20px;
 }
 
 #post-title {
     margin-bottom: 10px;
-}
-
-.post-date,
-#post-date,
-.post-category {
-    font-size: 16px;
-    color: #615c5c;
-    font-weight: normal;
-}
-
-#post-date {
-    margin-bottom: 20px;
-    border-left: 4px solid #615c5c;
-    padding-left: 10px;
 }
 
 #post-content {
@@ -181,13 +251,35 @@ a {
     margin-bottom: 20px;
 }
 
+/* COMMENTS SECTION */
 #comments-section {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-light);
     margin-bottom: 10px;
 }
 
-#comments-header {
-    font-size: 18px;
-    padding-bottom: 8px;
+#send-comment-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+#comment-content-input {
+    flex: 1;
+}
+
+#send-comment-button {
+    width: 100px;
+    padding: 10px 12px;
+}
+
+.comment-block {
+    margin-bottom: 15px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #fff;
+    border: 1px solid var(--border-light);
 }
 
 .comment-header {
@@ -197,40 +289,33 @@ a {
     margin-bottom: 8px;
 }
 
-.comment-block {
-    margin-bottom: 24px;
-    padding: 16px;
-    border-radius: 8px;
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-}
-
-#send-comment-section {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-}
-
 .comment-header h3 {
     font-size: 16px;
-    color: #333;
+    color: black;
+    margin: 0 0 5px 0;
+    flex-shrink: 0;
 }
 
 .comment-time {
     font-size: 13px;
     color: #888;
+    white-space: nowrap;
+}
+
+.comment-header .menu {
+    right: 0;
+    top: 32px;
+}
+
+.comment-content {
+    margin: 0;
+    font-size: 16px;
+    line-height: 22px;
 }
 
 .comment-actions {
     display: flex;
     gap: 8px;
-}
-
-.comment-edit-btn,
-.comment-delete-btn {
-    padding: 4px 10px;
-    font-size: 13px;
-    height: auto;
 }
 
 .comment-edit-form {
@@ -244,7 +329,18 @@ a {
 
 .comment-edit-actions {
     display: flex;
-    gap: 8px;
+    justify-content: flex-end;
+    gap: 3px;
+}
+
+.comment-cancel-button {
+    background-color: transparent;
+    color: black;
+    font-size: 14px;
+}
+
+.comment-save-button {
+    font-size: 14px;
 }
 
 #comment-login-prompt {
@@ -252,250 +348,13 @@ a {
     color: #555;
 }
 
-#comment-login-prompt a {
-    color: black;
-    text-decoration: underline;
-}
-
-.comment-content {
-    margin: 0;
-    font-size: 16px;
-    line-height: 22px;
-}
-
-#no-comments-paragraph {
+#no-comment-paragraph {
+    margin-top: 30px;
     text-align: center;
     font-size: 16px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea {
-    padding: 10px 10px 10px 15px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fff;
-    transition: border-color 0.3s;
-}
-
-input[type="text"]:hover,
-input[type="text"]:focus,
-input[type="email"]:hover,
-input[type="email"]:focus,
-input[type="password"]:hover,
-input[type="password"]:focus,
-textarea:hover,
-textarea:focus {
-    border-color: black;
-    outline: none;
-}
-
-textarea {
-    resize: vertical;
-    overflow: auto;
-    line-height: 1.6;
-}
-
-#send-comment-section {
-    margin-bottom: 16px;
-}
-
-.input-label {
-    font-size: 20px;
-}
-
-#comment-content-input {
-    flex: 1;
-}
-
-.post-content-input {
-    resize: vertical;
-    min-height: 200px;
-}
-
-#input-block,
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin: auto;
-}
-
-.auth-form {
-    max-width: 400px;
-}
-
-#input-block h2,
-.auth-form h2 {
-    margin-bottom: 10px;
-}
-
-.auth-footer a {
-    color: black;
-    text-decoration: underline;
-}
-
-#input-block {
-    height: 80vh;
-    box-sizing: border-box;
-}
-
-#input-block textarea {
-    flex-grow: 1;
-    resize: none;
-    width: 100%;
-    max-height: 300px;
-    box-sizing: border-box;
-}
-
-#input-block input {
-    flex-shrink: 0;
-}
-
-.form-error {
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #f3b6b6;
-    background: #fff1f1;
-    color: #7a0015;
-    font-size: 16px;
-}
-
-button,
-input[type="submit"] {
-    cursor: pointer;
-    padding: 10px 12px;
-    font-size: 16px;
-    background-color: white;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    transition: border-color 0.3s;
-}
-
-button:hover,
-input[type="submit"]:hover {
-    border-color: black;
-}
-
-#send-comment-button {
-    width: 100px;
-    padding: 10px 12px;
-}
-
-.delete-button {
-    background: none;
-    border: none;
-    color: inherit;
-    font: inherit;
-    padding: 0;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.post-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.action-captions {
-    cursor: pointer;
-    color: #615c5c;
-    display: flex;
-    gap: 15px;
-    font-size: 16px;
-    align-items: center;
-    transition: color 0.3s;
-}
-
-.action-captions h3:hover {
-    color: black;
-}
-
-.action-captions h3 a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.confirm-delete {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-}
-
-.confirm-delete-btn,
-.cancel-delete-btn {
-    padding: 6px 12px;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    background-color: transparent;
-    color: #615c5c;
-    cursor: pointer;
-}
-
-.confirm-delete-btn:hover,
-.cancel-delete-btn:hover {
-    color: black;
-}
-
-.account-page {
-    width: 100%;
-}
-
-.account-page h1 {
-    margin-bottom: 10px;
-    color: #001D3D;
-}
-
-.card {
-    background: white;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 25px;
-}
-
-.card h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #f0f0f0;
-    color: #001D3D;
-}
-
-.profile-row {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 18px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.profile-row:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-}
-
-.profile-row .label {
-    font-size: 13px;
-    color: #333;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-}
-
-.profile-row .value {
-    font-size: 16px;
-    color: #000;
-    font-weight: 500;
-}
-
+/* Account page comments list */
 .comments-list {
     display: flex;
     flex-direction: column;
@@ -513,7 +372,7 @@ input[type="submit"]:hover {
 }
 
 .comment-row:hover {
-    background-color: #fafafa;
+    background-color: var(--bg-light);
     border-radius: 4px;
 }
 
@@ -539,11 +398,6 @@ input[type="submit"]:hover {
     margin-bottom: 8px;
 }
 
-.comment-time {
-    font-size: 14px;
-    color: #999;
-}
-
 .comments-card p {
     text-align: center;
     color: #999;
@@ -551,152 +405,143 @@ input[type="submit"]:hover {
     font-size: 15px;
 }
 
-#account-logout {
-    background-color: #001D3D;
-    color: white;
-    border: none;
-    padding: 12px 24px;
+/* ========================================
+   8. FORMS & INPUTS
+   ======================================== */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    padding: 10px 10px 10px 15px;
     font-size: 16px;
+    border: 1px solid #ccc;
     border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%;
-    font-weight: 500;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
 }
 
-#account-logout:hover {
-    background-color: #002d52;
-    transform: translateY(-2px);
+input[type="text"]:hover,
+input[type="text"]:focus,
+input[type="email"]:hover,
+input[type="email"]:focus,
+input[type="password"]:hover,
+input[type="password"]:focus,
+textarea:hover,
+textarea:focus {
+    border-color: var(--green-300);
+    outline: none;
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
 
-#admin-users {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+textarea {
+    resize: vertical;
+    overflow: auto;
+    line-height: 1.6;
 }
 
-#admin-users thead {
-    background-color: #001D3D;
-    border-bottom: 1px solid #eee;
-}
-
-#admin-users th {
-    padding: 14px;
-    text-align: left;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    letter-spacing: 0.5px;
-}
-
-#admin-users td {
-    padding: 14px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 15px;
-    color: #555;
-}
-
-#admin-users tbody tr {
-    transition: background-color 0.2s ease;
-}
-
-#admin-users tbody tr:hover {
-    background-color: #fafafa;
-}
-
-.delete-user-btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    font-size: 13px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.15s ease;
-    font-weight: 500;
-}
-
-.delete-user-btn:hover:not(:disabled) {
-    background-color: #c0392b;
-    transform: scale(1.05);
-}
-
-.delete-user-btn:disabled {
-    background-color: #bdc3c7;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-#admin-users tbody tr td {
-    vertical-align: middle;
-}
-
-.confirm-delete {
+/* Form containers */
+#input-block,
+.auth-form {
     display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: auto;
+}
+
+.auth-form {
+    max-width: 450px;
+}
+
+#input-block h2,
+.auth-form h2 {
+    margin-bottom: 10px;
+}
+
+#input-block {
+    box-sizing: border-box;
+}
+
+#input-block textarea {
+    flex-grow: 1;
+    resize: vertical;
+    width: 100%;
+    min-height: 300px;
+    box-sizing: border-box;
+}
+
+#input-block input {
+    flex-shrink: 0;
+}
+
+.auth-footer a,
+#comment-login-prompt a {
+    color: var(--green-300);
+}
+
+.auth-footer a:hover
+#comment-login-prompt a:hover {
+    color: var(--green-500);
+}
+
+/* Form error messages */
+.form-error {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #f3b6b6;
+    background: #fff1f1;
+    color: #7a0015;
+    font-size: 16px;
+}
+
+/* Buttons */
+button,
+input[type="submit"] {
+    cursor: pointer;
+    padding: 10px 12px;
+    font-size: 16px;
+    background-color: var(--green-300);
+    color: var(--pure-white);
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background-color: var(--green-500);
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
+}
+
+/* Delete confirmation buttons */
+.confirm-delete {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
     gap: 10px;
     flex-wrap: wrap;
 }
 
-.confirm-delete-user,
-.cancel-delete-user {
-    flex: 1;
-    min-width: 150px;
-    padding: 10px 14px;
-    font-size: 14px;
+.confirm-delete-btn,
+.cancel-delete-btn {
+    padding: 6px 12px;
+    font-size: 16px;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    font-weight: 500;
-}
-
-.confirm-delete-user {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.confirm-delete-user:hover {
-    background-color: #c0392b;
-}
-
-.cancel-delete-user {
-    background-color: #95a5a6;
-    color: white;
-}
-
-.cancel-delete-user:hover {
-    background-color: #7f8c8d;
-}
-
-#post-list {
-    padding: 0;
-}
-
-.post {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #e0e0e0; 
-    border-radius: 6px;
-    padding: 10px 12px;
-    cursor: default;
-}
-
-.post-link {
-    display: block;
-    flex: 1;
-    text-decoration: none;
-    color: inherit;
-}
-
-.post-title {
-    font-size: 18px;
+    border-radius: 4px;
+    background-color: transparent;
     color: black;
-    margin: 0 0 5px 0;
-    padding: 0;
-    font-weight: 500;
+    cursor: pointer;
 }
 
+.confirm-delete-btn:hover,
+.cancel-delete-btn:hover {
+    background-color: #eee;
+}
+
+/* ========================================
+   9. COMPONENTS - MENU & POST ACTIONS
+   ======================================== */
 .menu-wrapper {
     position: relative;
     margin-left: 12px;
@@ -709,15 +554,15 @@ input[type="submit"]:hover {
     font-size: 20px;
     line-height: 1;
     cursor: pointer;
-    color: #615c5c;
+    color: var(--text-gray);
     padding: 6px 8px;
     border-radius: 6px;
-    transition: background 0.15s, color 0.15s;
+    transition: all 0.3s ease;
 }
 
 .menu-button:hover {
-    background: #f5f5f5;
-    color: #000;
+    background-color: #eee;
+    box-shadow: none;
 }
 
 .menu {
@@ -726,42 +571,40 @@ input[type="submit"]:hover {
     right: 0;
     top: 32px;
     background: #fff;
-    border: 1px solid #e6e6e6;
+    border: 1px solid var(--border-light);
     box-shadow: 0 8px 24px rgba(0,0,0,0.06);
     border-radius: 8px;
     min-width: 120px;
     z-index: 20;
 }
 
+.menu.open {
+    display: block;
+}
+
 .menu a,
 .menu button {
     display: block;
     padding: 8px 12px;
-    font-size: 14px;
-    color: #333;
+    font-size: 15px;
+    color: black;
     text-decoration: none;
     background: transparent;
     border: none;
     text-align: left;
     width: 100%;
     cursor: pointer;
+    border-radius: 8px;
 }
 
 .menu a:hover,
 .menu button:hover {
     background: #f7f7f7;
-    color: #000;
 }
 
-.menu-wrapper:hover .menu {
-    display: block;
-}
-
-.post:hover {
-    background: transparent;
-    transform: none;
-}
-
+/* ========================================
+   10. PAGINATION
+   ======================================== */
 #pagination {
     display: flex;
     justify-content: center;
@@ -786,21 +629,95 @@ input[type="submit"]:hover {
 
 .pagination-link {
     background-color: transparent;
-    color: #333;
-    border: 1px solid #e0e0e0;
+    color: black;
+    border: 1px solid var(--border-light);
     text-decoration: none;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .pagination-link:hover {
-    background-color: #e0e7ff;
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+    border: 1px solid var(--green-300);
+    box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
 
 .pagination-current {
-    background-color: var(--accent-color);
+    background-color: var(--green-300);
     color: white;
     cursor: default;
+}
+
+/* ========================================
+   11. ACCOUNT PAGE & ADMIN
+   ======================================== */
+.account-page {
+    width: 100%;
+}
+
+.account-page h1 {
+    margin-bottom: 10px;
+    color: #001D3D;
+}
+
+.card {
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.card h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+    color: #001D3D;
+}
+
+/* Profile section */
+.profile-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.profile-row .label {
+    font-size: 13px;
+    color: var(--text-dark);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.profile-row .value {
+    font-size: 16px;
+    color: #000;
+    font-weight: 500;
+}
+
+/* Account logout button */
+#account-logout {
+    background-color: var(--green-300);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    font-weight: 500;
+}
+
+#account-logout:hover {
+    background-color: var(--green-500);
 }

@@ -1,9 +1,8 @@
-<div style="height: 80vh;">
-    <form id="input-block" method="put" action="">
-        <input name="title" type="text" placeholder="Title" value="{{post.title}}" required>
-        <textarea name="content" placeholder="Content" required>{{post.content}}</textarea>
-        <input name="category" type="text" placeholder="Category" value="{{post.category}}" required>
-        <input type="submit" value="Update">
-        <input name="id" type="hidden" value="{{post.id}}">
-    </form>
-</div>
+<form id="input-block" method="put" action="">
+    <h2>Edit post</h2>
+    <input name="title" type="text" placeholder="Title" value="{{post.title}}" required>
+    <textarea name="content" placeholder="Content" required>{{post.content}}</textarea>
+    <input name="category" type="text" placeholder="Category" value="{{post.category}}" required>
+    <input type="submit" value="Update">
+    <input name="id" type="hidden" value="{{post.id}}">
+</form>

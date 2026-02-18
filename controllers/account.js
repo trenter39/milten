@@ -187,7 +187,7 @@ export async function renderAccount(req, res) {
         }));
 
         res.render('account', {
-            title: 'Account - Murny',
+            title: 'Account - Milten',
             script: '<script src="/scripts/account.js"></script>',
             isAuthenticated: true,
             isAdmin,

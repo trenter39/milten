@@ -1,6 +1,20 @@
-const postList = document.querySelector('#post-list');
+const postList = document.getElementById('post-list');
 if (postList) {
     postList.addEventListener('click', async (e) => {
+        if (e.target.closest('.menu-button')) {
+            e.stopPropagation();
+            const button = e.target.closest('.menu-button');
+            const menu = button.nextElementSibling;
+            
+            document.querySelectorAll('.menu.open').forEach(m => {
+                if (m !== menu) {
+                    m.classList.remove('open');
+                }
+            });
+            
+            menu.classList.toggle('open');
+        }
+        
         if (e.target.classList.contains('delete-button') && e.target.dataset.id) {
             e.preventDefault();
             e.stopPropagation();
@@ -39,3 +53,20 @@ if (postList) {
         }
     });
 }
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-wrapper')) {
+        document.querySelectorAll('.menu.open').forEach(menu => {
+            menu.classList.remove('open');
+        });
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.menu a') || (e.target.closest('.menu button') && !e.target.closest('.menu-button'))) {
+        const menu = e.target.closest('.menu');
+        if (menu) {
+            menu.classList.remove('open');
+        }
+    }
+});
