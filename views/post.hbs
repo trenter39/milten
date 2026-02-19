@@ -2,9 +2,9 @@
 <div id="post-meta">
     <span>{{post.category}} | {{formatDate post.createdAt}}</span>
 </div>
-<p id="post-content">
+<div id="post-content">
     {{{trimContent post.content}}}
-</p>
+</div>
 <div id="comment-section" data-post-id="{{post.id}}">
     <h1 id="comments-section">Comments</h1>
     {{#if user}}

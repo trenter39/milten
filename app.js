@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import verifyToken, { verifyTokenOptional, verifyAdmin } from './config/auth.js';
 import postsRouter from './routes/posts.js';
 import authRouter from './routes/auth.js';
-import adminRouter from './routes/admin.js';
 import { fetchPost, queryPostsWithSearchAndPagination } from './controllers/posts.js';
 import { fetchComments } from './controllers/comments.js';
 import { renderAccount } from './controllers/account.js';
@@ -26,7 +25,11 @@ const handlebars = expressHandlebars.create({
             return new Date(dateString).toISOString().slice(0, 10);
         },
         trimContent: function (content) {
-            return content.trim().replace(/\n/g, '<br>');
+            return content.trim()
+                .split(/\n{2,}|\r?\n/)
+                .filter(p => p.trim().length > 0)
+                .map(p => `<p>${p.trim()}</p>`)
+                .join('');
         },
         tagsFormat: function (tags) {
             return tags.join(', ');
@@ -72,7 +75,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
-app.use('/api/admin', verifyToken, verifyAdmin, adminRouter);
 app.use(express.static('public'));
 
 app.get('/', verifyTokenOptional, async (req, res) => {

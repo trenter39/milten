@@ -131,7 +131,6 @@ a {
 }
 
 /* SEARCH */
-
 #search-form {
     display: flex;
     justify-content: center;
@@ -164,7 +163,8 @@ a {
 }
 
 #search-button:hover,
-#send-comment-button:hover {
+#send-comment-button:hover,
+#account-logout:hover {
     background-color: var(--green-500);
     box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
@@ -246,16 +246,20 @@ a {
 
 #post-content {
     font-size: 16px;
-    line-height: 1.8;
+    line-height: 1.6;
     text-align: justify;
     margin-bottom: 20px;
+}
+
+#post-content p {
+    margin-bottom: 16px;
 }
 
 /* COMMENTS SECTION */
 #comments-section {
     padding-top: 20px;
     border-top: 1px solid var(--border-light);
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 #send-comment-section {
@@ -358,42 +362,43 @@ a {
 .comments-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 15px;
 }
 
 .comment-row {
-    border-bottom: 1px solid #f0f0f0;
-    padding: 10px 12px;
-    transition: background 0.2s ease;
+    border: 1px solid var(--border-light);
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: box-shadow 0.2s ease;
 }
 
 .comment-row:last-child {
-    border-bottom: none;
+    margin-bottom: 20px;
 }
 
 .comment-row:hover {
-    background-color: var(--bg-light);
-    border-radius: 4px;
+    border: 1px solid var(--green-300);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.comment-row a {
+.comment-post-title {
     display: inline-block;
-    font-size: 14px;
-    color: #3D0C02;
+    font-size: 16px;
+    color: var(--text-dark);
     text-decoration: none;
     font-weight: 500;
     margin-bottom: 8px;
     transition: color 0.2s ease;
 }
 
-.comment-row a:hover {
-    color: #2A0801;
-    text-decoration: underline;
+.comment-post-title:hover {
+    color: black;
 }
 
 .comment-preview {
     font-size: 16px;
-    color: #555;
+    color: black;
     line-height: 1.5;
     margin-bottom: 8px;
 }
@@ -405,9 +410,7 @@ a {
     font-size: 15px;
 }
 
-/* ========================================
-   8. FORMS & INPUTS
-   ======================================== */
+/* FORMS & INPUTS */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -478,8 +481,7 @@ textarea {
     color: var(--green-300);
 }
 
-.auth-footer a:hover
-#comment-login-prompt a:hover {
+.auth-footer a:hover #comment-login-prompt a:hover {
     color: var(--green-500);
 }
 
@@ -539,9 +541,7 @@ input[type="submit"]:hover {
     background-color: #eee;
 }
 
-/* ========================================
-   9. COMPONENTS - MENU & POST ACTIONS
-   ======================================== */
+/* COMPONENTS - MENU & POST ACTIONS */
 .menu-wrapper {
     position: relative;
     margin-left: 12px;
@@ -572,7 +572,7 @@ input[type="submit"]:hover {
     top: 32px;
     background: #fff;
     border: 1px solid var(--border-light);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     border-radius: 8px;
     min-width: 120px;
     z-index: 20;
@@ -600,11 +600,10 @@ input[type="submit"]:hover {
 .menu a:hover,
 .menu button:hover {
     background: #f7f7f7;
+    box-shadow: none;
 }
 
-/* ========================================
-   10. PAGINATION
-   ======================================== */
+/* PAGINATION */
 #pagination {
     display: flex;
     justify-content: center;
@@ -647,55 +646,38 @@ input[type="submit"]:hover {
     cursor: default;
 }
 
-/* ========================================
-   11. ACCOUNT PAGE & ADMIN
-   ======================================== */
-.account-page {
-    width: 100%;
-}
-
+/* ACCOUNT PAGE & ADMIN */
 .account-page h1 {
     margin-bottom: 10px;
-    color: #001D3D;
+    color: black;
 }
 
 .card {
     background: white;
     border: 1px solid var(--border-light);
     border-radius: 8px;
-    padding: 25px;
     margin-bottom: 25px;
-}
-
-.card h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #f0f0f0;
-    color: #001D3D;
 }
 
 /* Profile section */
 .profile-row {
     display: flex;
     flex-direction: column;
-    margin-bottom: 18px;
-    padding-bottom: 18px;
+    padding: 16px;
     border-bottom: 1px solid #f0f0f0;
 }
 
 .profile-row:last-child {
     margin-bottom: 0;
-    padding-bottom: 0;
+    padding-bottom: 18px;
     border-bottom: none;
 }
 
 .profile-row .label {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-dark);
     font-weight: 500;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .profile-row .value {
@@ -716,8 +698,4 @@ input[type="submit"]:hover {
     transition: background-color 0.3s ease, transform 0.2s ease;
     width: 100%;
     font-weight: 500;
-}
-
-#account-logout:hover {
-    background-color: var(--green-500);
 }

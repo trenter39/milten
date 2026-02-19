@@ -1,60 +1,64 @@
-<div class="account-page">
-    <h1>Your Account</h1>
+<h2 style="margin-bottom: 20px;">Your Account</h2>
 
-    <section class="card profile-card">
-        <h2>Profile Information</h2>
-        <div class="profile-row">
-            <div class="label">First name</div>
-            <div class="value">{{profile.firstName}}</div>
-        </div>
-        <div class="profile-row">
-            <div class="label">Last name</div>
-            <div class="value">{{profile.lastName}}</div>
-        </div>
-        <div class="profile-row">
-            <div class="label">Email address</div>
-            <div class="value">{{profile.email}}</div>
-        </div>
-    </section>
+<section class="card profile-card">
+    <div class="profile-row">
+        <div class="label">First name</div>
+        <div class="value">{{profile.firstName}}</div>
+    </div>
+    <div class="profile-row">
+        <div class="label">Last name</div>
+        <div class="value">{{profile.lastName}}</div>
+    </div>
+    <div class="profile-row">
+        <div class="label">Email address</div>
+        <div class="value">{{profile.email}}</div>
+    </div>
+    <div class="profile-row">
+        <div class="label">Creation date</div>
+        <div class="value" id="profile-creation-date">{{profile.createdAt}}</div>
+    </div>
+</section>
 
-    <section class="card comments-card">
-        <h2>Your Comments</h2>
-        {{#if comments.length}}
-            <div class="comments-list">
-                {{#each comments}}
-                    <div class="comment-row">
-                        <a href="/post/{{this.postID}}" class="small">{{this.postTitle}}</a>
-                        <div class="comment-preview">{{this.preview}}</div>
-                        <div class="comment-time" data-time="{{this.createdAt}}">{{this.createdAt}}</div>
-                    </div>
-                {{/each}}
-            </div>
-        {{else}}
-            <p>You haven't written any comments yet.</p>
-        {{/if}}
-    </section>
+<h2 style="margin-bottom: 20px;">Your Comments</h2>
 
-    <button id="account-logout" class="primary">Logout</button>
-</div>
+<section class="comments-card">
+    {{#if comments.length}}
+    <div class="comments-list">
+        {{#each comments}}
+        <div class="comment-row">
+            <a href="/post/{{this.postID}}" class="comment-post-title">{{this.postTitle}}</a>
+            <div class="comment-preview">{{this.preview}}</div>
+            <div class="comment-time" data-time="{{this.createdAt}}">{{this.createdAt}}</div>
+        </div>
+        {{/each}}
+    </div>
+    {{else}}
+    <p>You haven't written any comments yet.</p>
+    {{/if}}
+</section>
+
+<button id="account-logout" class="primary">Logout</button>
 
 <script>
-(function(){
-    function timeAgo(iso){
-        const d = new Date(iso);
-        const now = new Date();
-        const sec = Math.floor((now - d) / 1000);
-        if (sec < 60) return sec + ' seconds ago';
-        const min = Math.floor(sec / 60);
-        if (min < 60) return min + ' minutes ago';
-        const hr = Math.floor(min / 60);
-        if (hr < 24) return hr + ' hours ago';
-        const day = Math.floor(hr / 24);
-        if (day < 30) return day + ' days ago';
-        return d.toLocaleDateString();
-    }
-    document.querySelectorAll('.comment-time').forEach(element => {
-        const timeDate = element.dataset.time;
-        if (timeDate) element.textContent = timeAgo(timeDate);
-    });
-})();
+    (function () {
+        function timeAgo(iso) {
+            const d = new Date(iso);
+            const now = new Date();
+            const sec = Math.floor((now - d) / 1000);
+            if (sec < 60) return sec + ' seconds ago';
+            const min = Math.floor(sec / 60);
+            if (min < 60) return min + ' minutes ago';
+            const hr = Math.floor(min / 60);
+            if (hr < 24) return hr + ' hours ago';
+            const day = Math.floor(hr / 24);
+            if (day < 30) return day + ' days ago';
+            return d.toLocaleDateString();
+        }
+        document.querySelectorAll('.comment-time').forEach(element => {
+            const timeDate = element.dataset.time;
+            if (timeDate) element.textContent = timeAgo(timeDate);
+        });
+        const creationDate = document.getElementById('profile-creation-date');
+        creationDate.textContent = timeAgo(creationDate.textContent);
+    })();
 </script>
