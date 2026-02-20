@@ -4,13 +4,13 @@ Milten is a personal blogging platform built with **Node.js**, **Express**, **Ha
 
 ## Setup Instructions
 
-1. Clone the repository
+1. Clone the repository:
 ```
 git clone https://github.com/trenter39/milten.git
 cd milten
 ```
 
-2. Install packages via **npm**
+2. Install packages via **npm**:
 ```
 npm install
 ```
@@ -38,11 +38,18 @@ JWT_EXPIRES_IN=1d
 NODE_ENV=production
 ```
 
-6. Start the server via **node**
+6. Start the server via **node**:
 ```
 node app.js
 ```
 
 Now you can visit the website via `http://localhost:8080/`.
 
-![site preview](./previews/home-preview.png)
+## Docker Setup (Recommended)
+
+For a quick out-of-the-box experience without manual database setup, run with Docker Compose:
+```
+docker compose up
+```
+
+![milten preview](./previews/home-preview.png)
