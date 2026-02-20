@@ -151,28 +151,74 @@ function editComment(block) {
 }
 
 function deleteComment(block) {
-    const commentId = block.dataset.commentId;
-    if (!confirm('Delete this comment?')) return;
+    if (!document.getElementById('modal-confirm')) {
+        const modal = document.createElement('div');
+        modal.id = 'modal-confirm';
+        modal.className = 'modal-confirm-overlay';
+        modal.innerHTML = `
+            <div class="modal-confirm-window">
+                <h2 class="modal-confirm-title"></h2>
+                <p class="modal-confirm-desc"></p>
+                <div class="modal-confirm-actions">
+                    <button class="modal-cancel-btn">Cancel</button>
+                    <button class="modal-delete-btn">Delete</button>
+                </div>
+            </div>
+        `;
+        modal.style.display = 'none';
+        document.body.appendChild(modal);
+    }
 
-    api(`/${commentId}`, { method: 'DELETE' })
-        .then((res) => {
-            if (res.ok) {
-                block.remove();
-                const remaining = section.querySelectorAll('.comment-block');
-                const noComment = document.getElementById('no-comment-paragraph');
-                if (remaining.length === 0 && !noComment) {
-                    const p = document.createElement('p');
-                    p.id = 'no-comment-paragraph';
-                    p.textContent = 'No comments yet. Be the first to start the conversation!';
-                    section.appendChild(p);
-                }
-            } else {
-                return res.json().then((data) => {
+    function showModal({ title, desc, onDelete }) {
+        const modal = document.getElementById('modal-confirm');
+        modal.querySelector('.modal-confirm-title').textContent = title;
+        modal.querySelector('.modal-confirm-desc').textContent = desc;
+        modal.style.display = 'flex';
+        const cancelBtn = modal.querySelector('.modal-cancel-btn');
+        const deleteBtn = modal.querySelector('.modal-delete-btn');
+
+        function cleanup() {
+            modal.style.display = 'none';
+            cancelBtn.removeEventListener('click', onCancel);
+            deleteBtn.removeEventListener('click', onDeleteClick);
+        }
+        function onCancel() {
+            cleanup();
+        }
+        async function onDeleteClick() {
+            await onDelete();
+            cleanup();
+        }
+        cancelBtn.addEventListener('click', onCancel);
+        deleteBtn.addEventListener('click', onDeleteClick);
+    }
+
+    const commentId = block.dataset.commentId;
+    showModal({
+        title: 'Delete comment?',
+        desc: 'After deletion all of its content will be deleted. Are you sure you want to delete this?',
+        onDelete: async () => {
+            try {
+                const res = await api(`/${commentId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    block.remove();
+                    const remaining = section.querySelectorAll('.comment-block');
+                    const noComment = document.getElementById('no-comment-paragraph');
+                    if (remaining.length === 0 && !noComment) {
+                        const p = document.createElement('p');
+                        p.id = 'no-comment-paragraph';
+                        p.textContent = 'No comments yet. Be the first to start the conversation!';
+                        section.appendChild(p);
+                    }
+                } else {
+                    const data = await res.json().catch(() => ({}));
                     alert(data.error || 'Failed to delete comment.');
-                });
+                }
+            } catch (_) {
+                alert('Failed to delete comment.');
             }
-        })
-        .catch(() => alert('Failed to delete comment.'));
+        }
+    });
 }
 
 commentList.forEach((block) => {

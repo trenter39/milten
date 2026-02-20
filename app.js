@@ -110,10 +110,6 @@ app.get('/', verifyTokenOptional, async (req, res) => {
     }
 });
 
-app.get('/home', (req, res) => {
-    res.redirect('/');
-});
-
 app.get('/search', verifyTokenOptional, async (req, res) => {
     try {
         const query = req.query.q || req.query.term || '';

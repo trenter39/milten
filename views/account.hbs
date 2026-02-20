@@ -1,6 +1,6 @@
 <h2 style="margin-bottom: 20px;">Your Account</h2>
 
-<section class="card profile-card">
+<section class="profile-card">
     <div class="profile-row">
         <div class="label">First name</div>
         <div class="value">{{profile.firstName}}</div>
@@ -21,21 +21,19 @@
 
 <h2 style="margin-bottom: 20px;">Your Comments</h2>
 
-<section class="comments-card">
-    {{#if comments.length}}
-    <div class="comments-list">
-        {{#each comments}}
-        <div class="comment-row">
-            <a href="/post/{{this.postID}}" class="comment-post-title">{{this.postTitle}}</a>
-            <div class="comment-preview">{{this.preview}}</div>
-            <div class="comment-time" data-time="{{this.createdAt}}">{{this.createdAt}}</div>
-        </div>
-        {{/each}}
+{{#if comments.length}}
+<div class="comments-list">
+    {{#each comments}}
+    <div class="comment-row">
+        <a href="/post/{{this.postID}}" class="comment-post-title">{{this.postTitle}}</a>
+        <div class="comment-preview">{{this.preview}}</div>
+        <div class="comment-time" data-time="{{this.createdAt}}">{{this.createdAt}}</div>
     </div>
-    {{else}}
-    <p>You haven't written any comments yet.</p>
-    {{/if}}
-</section>
+    {{/each}}
+</div>
+{{else}}
+<p class="no-comments-profile">You haven't written any comments yet.</p>
+{{/if}}
 
 <button id="account-logout" class="primary">Logout</button>
 

@@ -59,13 +59,12 @@ export async function register(req, res) {
             [firstName, lastName, email, passwordHash, 'user']
         );
 
+        if (result.insertId === 1) {
+            await db.query('update users set role = "admin" where id = 1');
+        }
+
         return created(res, {
-            message: 'User registered sucessfully',
-            id: result.insertId,
-            firstName: result.first_name,
-            lastName: result.last_name,
-            email: result.email,
-            role: 'user'
+            message: 'User registered sucessfully'
         });
     } catch (err) {
         return internalServerError(res, err);
