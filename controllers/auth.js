@@ -13,7 +13,8 @@ import {
     badRequest,
     unauthorized,
     conflict,
-    internalServerError
+    internalServerError,
+    validateRequiredFields
 } from "../utils/APIHelper.js";
 
 function setAuthCookie(res, token) {
@@ -36,6 +37,13 @@ function clearAuthCookie(res) {
 
 export async function register(req, res) {
     try {
+        const missingFields = validateRequiredFields(
+            req.body || {},
+            ['firstName', 'lastName', 'email', 'password']
+        );
+
+        if (missingFields) return badRequest(res, missingFields);
+
         const { firstName, lastName, email, password } = req.body;
 
         if (email.length < 3 || email.length > 50) {
@@ -73,11 +81,14 @@ export async function register(req, res) {
 
 export async function login(req, res) {
     try {
-        const { email, password } = req.body;
+        const missingFields = validateRequiredFields(
+            req.body || {},
+            ['email', 'password']
+        );
 
-        if (!email || !password) {
-            return badRequest(res, 'Missing email or password');
-        }
+        if (missingFields) return badRequest(res, missingFields);
+
+        const { email, password } = req.body;
 
         const [rows] = await db.query(
             `select id, first_name, last_name, email, passwordHash, role

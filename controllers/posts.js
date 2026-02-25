@@ -6,7 +6,8 @@ import {
     noContent,
     badRequest,
     notFound,
-    internalServerError
+    internalServerError,
+    validateRequiredFields
 } from '../utils/APIHelper.js';
 
 export async function fetchPost(id) {
@@ -74,8 +75,14 @@ export async function getPostsTerm(req, res) {
 
 export async function createPost(req, res) {
     try {
+        const missingFields = validateRequiredFields(
+            req.body || {},
+            ['title', 'content', 'category']
+        );
+
+        if (missingFields) return badRequest(res, missingFields);
+
         const { title, content, category } = req.body;
-        if (!title || !content || !category) return badRequest(res, "Missing fields!");
 
         const [result] = await db.query(
             `insert into posts(title, content, category)
@@ -104,6 +111,13 @@ export async function updatePost(req, res) {
         const id = validateID(req.params.postID);
         if (!id) return badRequest(res, 'Invalid ID');
 
+        const missingFields = validateRequiredFields(
+            req.body || {},
+            ['title', 'content', 'category']
+        );
+
+        if (missingFields) return badRequest(res, missingFields);
+        
         let { title, content, category } = req.body;
 
         const [rows] = await db.query('select * from posts where id = ?', [id]);

@@ -63,7 +63,7 @@ export async function getComments(req, res) {
 
         const comments = await fetchComments(postID);
 
-        if (!comments.length) return notFound(res, "Comments weren't found!");
+        if (!comments) return notFound(res, "Comments weren't found!");
 
         return ok(res, comments);
     } catch (err) {
@@ -76,8 +76,10 @@ export async function createComment(req, res) {
         const postID = validateID(req.params.postID);
         if (!postID) return badRequest(res, 'Invalid ID');
 
-        const { content } = req.body;
-        if (!content.trim()) return badRequest(res, "Comment content is required.");
+        const { content } = req.body || {};
+        if (!content || typeof content !== 'string' || !content.trim()) {
+            return badRequest(res, "Comment content is required.");
+        }
 
         const author = `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim();
         const userID = req.user.id;
@@ -88,7 +90,7 @@ export async function createComment(req, res) {
             [postID]
         );
 
-        if (!checkRows.length) return notFound(res, "Post wasn't found!" );
+        if (!checkRows.length) return notFound(res, "Post wasn't found!");
 
         const [result] = await db.query(
             `insert into comments(postID, author, content, userID)
@@ -118,8 +120,10 @@ export async function updateComment(req, res) {
         const commentID = validateID(req.params.commentID);
         if (!postID || !commentID) return badRequest(res, 'Invalid ID');
 
-        const { content } = req.body;
-        if (!content.trim()) return badRequest(res, "Comment content is required.");
+        const { content } = req.body || {};
+        if (!content || typeof content !== 'string' || !content.trim()) {
+            return badRequest(res, "Comment content is required.");
+        }
 
         const [selectRows] = await db.query(
             `select * from comments
