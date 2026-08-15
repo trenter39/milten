@@ -1,41 +1,45 @@
-<h2 style="margin-bottom: 20px;">Your Account</h2>
+<h2 style='margin-bottom: 20px;'>Your Account</h2>
 
-<section class="profile-card">
-    <div class="profile-row">
-        <div class="label">First name</div>
-        <div class="value">{{profile.firstName}}</div>
+<section class='profile-card'>
+    <div class='profile-row'>
+        <div class='label'>First name</div>
+        <div class='value'>{{ profile.firstName }}</div>
     </div>
-    <div class="profile-row">
-        <div class="label">Last name</div>
-        <div class="value">{{profile.lastName}}</div>
+    <div class='profile-row'>
+        <div class='label'>Last name</div>
+        <div class='value'>{{ profile.lastName }}</div>
     </div>
-    <div class="profile-row">
-        <div class="label">Email address</div>
-        <div class="value">{{profile.email}}</div>
+    <div class='profile-row'>
+        <div class='label'>Email address</div>
+        <div class='value'>{{ profile.email }}</div>
     </div>
-    <div class="profile-row">
-        <div class="label">Creation date</div>
-        <div class="value" id="profile-creation-date">{{profile.createdAt}}</div>
+    <div class='profile-row'>
+        <div class='label'>Creation date</div>
+        <div id='profile-creation-date' class='value'>{{ profile.createdAt }}</div>
     </div>
 </section>
 
-<h2 style="margin-bottom: 20px;">Your Comments</h2>
+<h2 style='margin-bottom: 20px;'>Your Comments</h2>
 
 {{#if comments.length}}
-<div class="comments-list">
-    {{#each comments}}
-    <div class="comment-row">
-        <a href="/post/{{this.postID}}" class="comment-post-title">{{this.postTitle}}</a>
-        <div class="comment-preview">{{this.preview}}</div>
-        <div class="comment-time" data-time="{{this.createdAt}}">{{this.createdAt}}</div>
+    <div class='comments-list'>
+        {{#each comments}}
+            <div class='comment-row'>
+                <a class='comment-post-title' href='/post/{{ this.postID }}'>
+                    {{ this.postTitle }}
+                </a>
+                <div class='comment-preview'>{{ this.preview }}</div>
+                <div class='comment-time' data-time='{{ this.createdAt }}'>
+                    {{ this.createdAt }}
+                </div>
+            </div>
+        {{/each}}
     </div>
-    {{/each}}
-</div>
 {{else}}
-<p class="no-comments-profile">You haven't written any comments yet.</p>
+    <p class='no-comments-profile'>You haven't written any comments yet.</p>
 {{/if}}
 
-<button id="account-logout" class="primary">Logout</button>
+<button id='account-logout' class='primary'>Logout</button>
 
 <script>
     (function () {
@@ -52,7 +56,7 @@
             if (day < 30) return day + ' days ago';
             return d.toLocaleDateString();
         }
-        document.querySelectorAll('.comment-time').forEach(element => {
+        document.querySelectorAll('.comment-time').forEach((element) => {
             const timeDate = element.dataset.time;
             if (timeDate) element.textContent = timeAgo(timeDate);
         });

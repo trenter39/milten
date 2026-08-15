@@ -1,9 +1,6 @@
 import db from '../config/db.js';
 import { fetchCommentsByUser } from './comments.js';
-import {
-    notFound,
-    internalServerError
-} from '../utils/APIHelper.js';
+import { notFound, internalServerError } from '../utils/httpResponses.js';
 
 async function getUserData(userID) {
     const [rows] = await db.query(
@@ -22,7 +19,7 @@ async function getUserData(userID) {
         lastName: user.last_name,
         email: user.email,
         role: user.role,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
     };
 }
 
@@ -33,14 +30,14 @@ async function getUsersData() {
         order by id asc`
     );
 
-    const users = rows.map(user => ({
+    const users = rows.map((user) => ({
         id: user.id,
         firstName: user.first_name,
         lastName: user.last_name,
         email: user.email,
-        role: user.role
+        role: user.role,
     }));
-    
+
     return users;
 }
 
@@ -51,7 +48,7 @@ export async function renderAccount(req, res) {
 
         const profile = await getUserData(userID);
         if (!profile) return notFound(res, 'User not found');
-        
+
         const comments = await fetchCommentsByUser(userID);
 
         let users = [];
@@ -60,9 +57,12 @@ export async function renderAccount(req, res) {
             users = await getUsersData();
         }
 
-        const formattedComments = comments.map(comment => ({
+        const formattedComments = comments.map((comment) => ({
             ...comment,
-            preview: (comment.content && comment.content.length > 150) ? comment.content.slice(0, 150) + '...' : comment.content
+            preview:
+                comment.content && comment.content.length > 150
+                    ? comment.content.slice(0, 150) + '...'
+                    : comment.content,
         }));
 
         res.render('account', {
@@ -73,7 +73,7 @@ export async function renderAccount(req, res) {
             user: req.user || null,
             profile,
             comments: formattedComments,
-            users
+            users,
         });
     } catch (err) {
         return internalServerError(res, err);

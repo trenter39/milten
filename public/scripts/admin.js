@@ -48,7 +48,7 @@ if (postList) {
             e.stopPropagation();
             const button = e.target.closest('.menu-button');
             const menu = button.nextElementSibling;
-            document.querySelectorAll('.menu.open').forEach(m => {
+            document.querySelectorAll('.menu.open').forEach((m) => {
                 if (m !== menu) {
                     m.classList.remove('open');
                 }
@@ -70,13 +70,13 @@ if (postList) {
                         if (res.ok) {
                             window.location.reload();
                         } else {
-                            alert("Failed to delete post!");
+                            alert('Failed to delete post!');
                         }
                     } catch (err) {
                         console.error(err);
-                        alert("Error deleting post!");
+                        alert('Error deleting post!');
                     }
-                }
+                },
             });
         }
     });
@@ -84,14 +84,17 @@ if (postList) {
 
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.menu-wrapper')) {
-        document.querySelectorAll('.menu.open').forEach(menu => {
+        document.querySelectorAll('.menu.open').forEach((menu) => {
             menu.classList.remove('open');
         });
     }
 });
 
 document.addEventListener('click', (e) => {
-    if (e.target.closest('.menu a') || (e.target.closest('.menu button') && !e.target.closest('.menu-button'))) {
+    if (
+        e.target.closest('.menu a') ||
+        (e.target.closest('.menu button') && !e.target.closest('.menu-button'))
+    ) {
         const menu = e.target.closest('.menu');
         if (menu) {
             menu.classList.remove('open');

@@ -1,51 +1,74 @@
-<h1 id="post-title">{{post.title}}</h1>
-<div id="post-meta">
-    <span>{{post.category}} | {{formatDate post.createdAt}}</span>
+<h1 id='post-title'>{{ post.title }}</h1>
+<div id='post-meta'>
+    <span>{{ post.category }} | {{formatDate post.createdAt}}</span>
 </div>
-<div id="post-content">
-    {{{trimContent post.content}}}
-</div>
-<div id="comment-section" data-post-id="{{post.id}}">
-    <h1 id="comments-section">Comments</h1>
+<div id='post-content'>{{{trimContent post.content}}}</div>
+<div id='comment-section' data-post-id='{{ post.id }}'>
+    <h1 id='comments-section'>Comments</h1>
     {{#if user}}
-    <form id="comment-form">
-        <div id="send-comment-section">
-            <input type="text" name="comment-content" id="comment-content-input" placeholder="Comment" required>
-            <button type="submit" id="send-comment-button">Send</button>
-        </div>
-    </form>
+        <form id='comment-form'>
+            <div id='send-comment-section'>
+                <input
+                    id='comment-content-input'
+                    type='text'
+                    name='comment-content'
+                    placeholder='Comment'
+                    required
+                />
+                <button id='send-comment-button' type='submit'>Send</button>
+            </div>
+        </form>
     {{else}}
-    <p id="comment-login-prompt">Please <a href="/login">log in</a> to leave a comment. You can still read comments
-        below.</p>
+        <p id='comment-login-prompt'>
+            Please
+            <a href='/login'>log in</a>
+            to leave a comment. You can still read comments below.
+        </p>
     {{/if}}
     {{#if comments}}
-    {{#each comments}}
-    <div class="comment-block" data-comment-id="{{this.id}}" data-comment-user-id="{{this.userID}}">
-        <div class="comment-header">
-            <div>
-                <h3>{{this.author}}</h3>
-                <span class="comment-time">{{formatDate this.createdAt}}</span>
-            </div>
-            {{#if ../user}}
-            {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
-            <div class="menu-wrapper">
-                <button class="menu-button" aria-label="Comment options">⋯</button>
-                <div class="menu" role="menu">
-                    {{#if (eq this.userID ../user.id)}}
-                    <button type="button" class="comment-edit-btn" role="menuitem">Edit</button>
-                    {{/if}}
-                    {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
-                    <button type="button" class="comment-delete-btn" role="menuitem">Delete</button>
+        {{#each comments}}
+            <div
+                class='comment-block'
+                data-comment-id='{{ this.id }}'
+                data-comment-user-id='{{ this.userID }}'
+            >
+                <div class='comment-header'>
+                    <div>
+                        <h3>{{ this.author }}</h3>
+                        <span class='comment-time'>{{formatDate this.createdAt}}</span>
+                    </div>
+                    {{#if ../user}}
+                        {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
+                            <div class='menu-wrapper'>
+                                <button class='menu-button' aria-label='Comment options'>⋯</button>
+                                <div class='menu' role='menu'>
+                                    {{#if (eq this.userID ../user.id)}}
+                                        <button
+                                            class='comment-edit-btn'
+                                            type='button'
+                                            role='menuitem'
+                                        >
+                                            Edit
+                                        </button>
+                                    {{/if}}
+                                    {{#if (or (eq this.userID ../user.id) (eq ../user.role "admin"))}}
+                                        <button
+                                            class='comment-delete-btn'
+                                            type='button'
+                                            role='menuitem'
+                                        >
+                                            Delete
+                                        </button>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        {{/if}}
                     {{/if}}
                 </div>
+                <p class='comment-content'>{{ this.content }}</p>
             </div>
-            {{/if}}
-            {{/if}}
-        </div>
-        <p class="comment-content">{{this.content}}</p>
-    </div>
-    {{/each}}
+        {{/each}}
     {{else}}
-    <p id="no-comment-paragraph">No comments yet. Be the first to start the conversation!</p>
+        <p id='no-comment-paragraph'>No comments yet. Be the first to start the conversation!</p>
     {{/if}}
 </div>

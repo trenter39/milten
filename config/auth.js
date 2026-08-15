@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from './conf.js';
-import { unauthorized, forbidden } from '../utils/APIHelper.js';
+import { unauthorized, forbidden } from '../utils/httpResponses.js';
 
 export function verifyToken(req, res, next) {
     const token = req.cookies.token;
@@ -20,7 +20,7 @@ export function verifyTokenOptional(req, res, next) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
-    } catch (_) { }
+    } catch (_) {}
     next();
 }
 

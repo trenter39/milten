@@ -7,10 +7,10 @@
 }
 
 :root {
-    --green-900: #132A13;
-    --green-500: #31572C;
-    --green-500: #4F772D;
-    --green-300: #90A955;
+    --green-900: #132a13;
+    --green-500: #31572c;
+    --green-500: #4f772d;
+    --green-300: #90a955;
     --pure-white: #ffffff;
     --pure-black: #000000;
 
@@ -109,7 +109,9 @@ a {
     color: var(--pure-black);
     border-radius: 8px;
     text-decoration: none;
-    transition: background 0.15s, color 0.15s;
+    transition:
+        background 0.15s,
+        color 0.15s;
     display: inline-block;
 }
 
@@ -217,7 +219,6 @@ a {
     text-decoration: none;
     color: inherit;
 }
-
 
 .post-title {
     font-size: 18px;
@@ -405,24 +406,27 @@ a {
 }
 
 /* FORMS & INPUTS */
-input[type="text"],
-input[type="email"],
-input[type="password"],
+input[type='text'],
+input[type='email'],
+input[type='password'],
 textarea {
     padding: 10px 10px 10px 15px;
     font-size: 16px;
     border: 1px solid var(--input-border);
     border-radius: 8px;
     background-color: var(--pure-white);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        outline 0.2s ease;
 }
 
-input[type="text"]:hover,
-input[type="text"]:focus,
-input[type="email"]:hover,
-input[type="email"]:focus,
-input[type="password"]:hover,
-input[type="password"]:focus,
+input[type='text']:hover,
+input[type='text']:focus,
+input[type='email']:hover,
+input[type='email']:focus,
+input[type='password']:hover,
+input[type='password']:focus,
 textarea:hover,
 textarea:focus {
     border-color: var(--green-300);
@@ -491,7 +495,7 @@ textarea {
 
 /* Buttons */
 button,
-input[type="submit"] {
+input[type='submit'] {
     cursor: pointer;
     padding: 10px 12px;
     font-size: 16px;
@@ -503,7 +507,7 @@ input[type="submit"] {
 }
 
 button:hover,
-input[type="submit"]:hover {
+input[type='submit']:hover {
     background-color: var(--green-500);
     box-shadow: 0 2px 8px rgba(79, 119, 45, 0.15);
 }
@@ -699,7 +703,9 @@ input[type="submit"]:hover {
     font-size: 16px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition:
+        background-color 0.3s ease,
+        transform 0.2s ease;
     width: 100%;
     font-weight: 500;
 }
@@ -721,7 +727,7 @@ input[type="submit"]:hover {
 .modal-confirm-window {
     background: var(--pure-white);
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     padding: 32px 32px 24px 32px;
     min-width: 340px;
     max-width: 90vw;
@@ -729,7 +735,7 @@ input[type="submit"]:hover {
     flex-direction: column;
     gap: 18px;
     position: relative;
-    animation: modal-pop 0.18s cubic-bezier(.4, 1.6, .6,1) 1;
+    animation: modal-pop 0.18s cubic-bezier(0.4, 1.6, 0.6, 1) 1;
 }
 
 .modal-confirm-title {
@@ -781,6 +787,12 @@ input[type="submit"]:hover {
 }
 
 @keyframes modal-pop {
-    0% { transform: scale(0.95) translateY(20px); opacity: 0; }
-    100% { transform: scale(1) translateY(0); opacity: 1; }
+    0% {
+        transform: scale(0.95) translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
 }

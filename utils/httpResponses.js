@@ -37,15 +37,5 @@ export function conflict(res, message) {
 
 export function internalServerError(res, error) {
     console.error(error);
-    return res.status(500).json({ error: "Internal server error!" });
-}
-
-export function validateRequiredFields(body, fields) {
-    for (const field of fields) {
-        const value = body[field];
-        if (!value || typeof value !== 'string' || !value.trim()) {
-            return `Field ${field} is required`;
-        }
-    }
-    return null;
+    return res.status(500).json({ error: 'Internal server error!' });
 }

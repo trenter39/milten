@@ -10,8 +10,8 @@ function api(path, options = {}) {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
-            ...(options.headers || {})
-        }
+            ...(options.headers || {}),
+        },
     });
 }
 
@@ -28,7 +28,7 @@ if (form) {
         try {
             const res = await api('', {
                 method: 'POST',
-                body: JSON.stringify({ content })
+                body: JSON.stringify({ content }),
             });
             const data = await res.json().catch(() => ({}));
 
@@ -53,7 +53,13 @@ function appendComment(comment) {
     block.className = 'comment-block';
     block.dataset.commentId = comment.id;
     block.dataset.commentUserId = comment.userID || '';
-    const date = comment.createdAt ? new Date(comment.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+    const date = comment.createdAt
+        ? new Date(comment.createdAt).toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+          })
+        : '';
     block.innerHTML = `
         <div class="comment-header">
             <div>
@@ -72,10 +78,15 @@ function appendComment(comment) {
         </div>
         <p class="comment-content">${escapeHtml(comment.content)}</p>
     `;
-    const insertRef = form || section.querySelector('#comment-login-prompt') || section.querySelector('#comments-section');
+    const insertRef =
+        form ||
+        section.querySelector('#comment-login-prompt') ||
+        section.querySelector('#comments-section');
     insertRef.insertAdjacentElement('afterend', block);
     block.querySelector('.comment-edit-btn').addEventListener('click', () => editComment(block));
-    block.querySelector('.comment-delete-btn').addEventListener('click', () => deleteComment(block));
+    block
+        .querySelector('.comment-delete-btn')
+        .addEventListener('click', () => deleteComment(block));
 }
 
 function escapeHtml(text) {
@@ -126,7 +137,7 @@ function editComment(block) {
         try {
             const res = await api(`/${commentId}`, {
                 method: 'PUT',
-                body: JSON.stringify({ content: newContent })
+                body: JSON.stringify({ content: newContent }),
             });
             if (res.ok) {
                 contentEl.textContent = newContent;
@@ -217,7 +228,7 @@ function deleteComment(block) {
             } catch (_) {
                 alert('Failed to delete comment.');
             }
-        }
+        },
     });
 }
 
@@ -236,7 +247,7 @@ section.addEventListener('click', (e) => {
         const button = e.target.closest('.menu-button');
         const menu = button.nextElementSibling;
 
-        document.querySelectorAll('.menu.open').forEach(m => {
+        document.querySelectorAll('.menu.open').forEach((m) => {
             if (m !== menu) {
                 m.classList.remove('open');
             }
@@ -248,18 +259,20 @@ section.addEventListener('click', (e) => {
 
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.menu-wrapper')) {
-        document.querySelectorAll('.menu.open').forEach(menu => {
+        document.querySelectorAll('.menu.open').forEach((menu) => {
             menu.classList.remove('open');
         });
     }
 });
 
 document.addEventListener('click', (e) => {
-    if (e.target.closest('.menu a') || (e.target.closest('.menu button') && !e.target.closest('.menu-button'))) {
+    if (
+        e.target.closest('.menu a') ||
+        (e.target.closest('.menu button') && !e.target.closest('.menu-button'))
+    ) {
         const menu = e.target.closest('.menu');
         if (menu) {
             menu.classList.remove('open');
         }
     }
 });
-

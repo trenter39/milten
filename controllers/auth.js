@@ -1,11 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import db from '../config/db.js';
-import {
-    JWT_SECRET,
-    JWT_EXPIRES_IN,
-    NODE_ENV
-} from '../config/conf.js';
+import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from '../config/conf.js';
 import {
     ok,
     created,
@@ -14,8 +10,12 @@ import {
     unauthorized,
     conflict,
     internalServerError,
-    validateRequiredFields
-} from "../utils/APIHelper.js";
+} from '../utils/httpResponses.js';
+import {
+    validateRequiredFields,
+    validateEmail,
+    validatePassword,
+} from '../utils/fieldValidator.js';
 
 function setAuthCookie(res, token) {
     const maxAge = 1000 * 60 * 60 * 24;
@@ -23,7 +23,7 @@ function setAuthCookie(res, token) {
         httpOnly: true,
         sameSite: 'lax',
         secure: NODE_ENV === 'production',
-        maxAge
+        maxAge,
     });
 }
 
@@ -31,32 +31,37 @@ function clearAuthCookie(res) {
     res.clearCookie('token', {
         httpOnly: true,
         sameSite: 'lax',
-        secure: NODE_ENV === 'production'
+        secure: NODE_ENV === 'production',
     });
 }
 
 export async function register(req, res) {
     try {
-        const missingFields = validateRequiredFields(
-            req.body || {},
-            ['firstName', 'lastName', 'email', 'password']
-        );
+        const missingFields = validateRequiredFields(req.body || {}, [
+            'firstName',
+            'lastName',
+            'email',
+            'password',
+        ]);
 
         if (missingFields) return badRequest(res, missingFields);
 
         const { firstName, lastName, email, password } = req.body;
+        const firstNameValue = firstName.trim();
+        const lastNameValue = lastName.trim();
+        const emailValue = email.trim();
 
-        if (email.length < 3 || email.length > 50) {
-            return badRequest(res, 'Email must be 3-50 characters');
-        }
-        if (password.length < 6 || password.length > 30) {
-            return badRequest(res, 'Password must be at least 6 characters');
+        const emailError = validateEmail(emailValue);
+        if (emailError) {
+            return badRequest(res, emailError);
         }
 
-        const [existing] = await db.query(
-            'select id from users where email = ? limit 1',
-            [email]
-        );
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            return badRequest(res, passwordError);
+        }
+
+        const [existing] = await db.query('select id from users where email = ? limit 1', [email]);
         if (existing.length) {
             return conflict(res, 'Email already exists');
         }
@@ -72,7 +77,7 @@ export async function register(req, res) {
         }
 
         return created(res, {
-            message: 'User registered sucessfully'
+            message: 'User registered sucessfully',
         });
     } catch (err) {
         return internalServerError(res, err);
@@ -81,14 +86,17 @@ export async function register(req, res) {
 
 export async function login(req, res) {
     try {
-        const missingFields = validateRequiredFields(
-            req.body || {},
-            ['email', 'password']
-        );
+        const missingFields = validateRequiredFields(req.body || {}, ['email', 'password']);
 
         if (missingFields) return badRequest(res, missingFields);
 
         const { email, password } = req.body;
+        const emailValue = email.trim();
+
+        const emailError = validateEmail(emailValue);
+        if (emailError) {
+            return badRequest(res, emailError);
+        }
 
         const [rows] = await db.query(
             `select id, first_name, last_name, email, passwordHash, role
@@ -111,7 +119,7 @@ export async function login(req, res) {
                 firstName: user.first_name,
                 lastName: user.last_name,
                 email: user.email,
-                role: user.role
+                role: user.role,
             },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
@@ -126,8 +134,8 @@ export async function login(req, res) {
                 firstName: user.first_name,
                 lastName: user.last_name,
                 email: user.email,
-                role: user.role || 'user'
-            }
+                role: user.role || 'user',
+            },
         });
     } catch (err) {
         return internalServerError(res, err);
@@ -139,6 +147,18 @@ export async function logout(req, res) {
     return noContent(res);
 }
 
-export async function me(req, res) {
-    return ok(res, { user: req.user || null });
+export async function getCurrentUser(req, res) {
+    if (!req.user) {
+        return ok(res, { user: null });
+    }
+
+    return ok(res, {
+        user: {
+            id: req.user.id,
+            firstName: req.user.firstName,
+            lastName: req.user.lastName,
+            email: req.user.email,
+            role: req.user.role,
+        },
+    });
 }

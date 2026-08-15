@@ -7,8 +7,8 @@ import {
     badRequest,
     notFound,
     internalServerError,
-    validateRequiredFields
-} from '../utils/APIHelper.js';
+} from '../utils/httpResponses.js';
+import { validateRequiredFields } from '../utils/fieldValidator.js';
 
 export async function fetchPost(id) {
     const [result] = await db.query('select * from posts where id = ?', [id]);
@@ -16,11 +16,11 @@ export async function fetchPost(id) {
     return result[0];
 }
 
-export async function fetchPosts({ mode = "api" } = {}) {
+export async function fetchPosts({ mode = 'api' } = {}) {
     let sql;
-    (mode === "frontend" ?
-        sql = "select * from posts order by createdAt desc" :
-        sql = "select * from posts order by id asc");
+    mode === 'frontend'
+        ? (sql = 'select * from posts order by createdAt desc')
+        : (sql = 'select * from posts order by id asc');
 
     const [result] = await db.query(sql);
     return result;
@@ -56,7 +56,7 @@ export async function getPostsTerm(req, res) {
 
         const result = await queryPostsWithSearchAndPagination({
             term: searchTerm,
-            page
+            page,
         });
 
         return ok(res, {
@@ -65,8 +65,8 @@ export async function getPostsTerm(req, res) {
                 page: result.page,
                 pageSize: result.pageSize,
                 totalCount: result.totalCount,
-                totalPages: result.totalPages
-            }
+                totalPages: result.totalPages,
+            },
         });
     } catch (err) {
         return internalServerError(res, err);
@@ -75,10 +75,11 @@ export async function getPostsTerm(req, res) {
 
 export async function createPost(req, res) {
     try {
-        const missingFields = validateRequiredFields(
-            req.body || {},
-            ['title', 'content', 'category']
-        );
+        const missingFields = validateRequiredFields(req.body || {}, [
+            'title',
+            'content',
+            'category',
+        ]);
 
         if (missingFields) return badRequest(res, missingFields);
 
@@ -111,17 +112,18 @@ export async function updatePost(req, res) {
         const id = validateID(req.params.postID);
         if (!id) return badRequest(res, 'Invalid ID');
 
-        const missingFields = validateRequiredFields(
-            req.body || {},
-            ['title', 'content', 'category']
-        );
+        const missingFields = validateRequiredFields(req.body || {}, [
+            'title',
+            'content',
+            'category',
+        ]);
 
         if (missingFields) return badRequest(res, missingFields);
-        
+
         let { title, content, category } = req.body;
 
         const [rows] = await db.query('select * from posts where id = ?', [id]);
-        if (!rows.length) return notFound(res, "Post not found!");
+        if (!rows.length) return notFound(res, 'Post not found!');
 
         await db.query(
             `update posts
@@ -153,7 +155,7 @@ export async function deletePost(req, res) {
         const [rows] = await db.query('select 1 from posts where id = ?', [id]);
         if (!rows.length) return notFound(res, "Post wasn't found!");
 
-        await db.query("delete from posts where id = ?", [id]);
+        await db.query('delete from posts where id = ?', [id]);
 
         return noContent(res);
     } catch (err) {
@@ -161,7 +163,11 @@ export async function deletePost(req, res) {
     }
 }
 
-export async function queryPostsWithSearchAndPagination({ term = null, page = 1, pageSize = 10 } = {}) {
+export async function queryPostsWithSearchAndPagination({
+    term = null,
+    page = 1,
+    pageSize = 10,
+} = {}) {
     page = Math.max(1, parseInt(page) || 1);
     pageSize = Math.max(1, parseInt(pageSize) || 10);
     const offset = (page - 1) * pageSize;
@@ -197,6 +203,6 @@ export async function queryPostsWithSearchAndPagination({ term = null, page = 1,
         totalCount,
         page,
         pageSize,
-        totalPages
+        totalPages,
     };
 }

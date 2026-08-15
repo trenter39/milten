@@ -5,7 +5,7 @@ import {
     getComment,
     createComment,
     updateComment,
-    deleteComment
+    deleteComment,
 } from '../controllers/comments.js';
 
 const router = express.Router({ mergeParams: true });

@@ -1,26 +1,28 @@
 {
-  "name": "personalblog",
-  "version": "2.0",
-  "description": "Personal blogging platform with CRUD operations and an API connection",
-  "main": "app.js",
-  "scripts": {
-    "dev": "nodemon app.js"
-  },
-  "keywords": [],
-  "author": "trenter39",
-  "license": "MIT",
-  "type": "module",
-  "dependencies": {
-    "base-64": "^1.0.0",
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "express-handlebars": "^8.0.3",
-    "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.14.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
-  }
+    "name": "personalblog",
+    "version": "2.0",
+    "description": "Personal blogging platform with CRUD operations and an API connection",
+    "main": "app.js",
+    "scripts": {
+        "dev": "nodemon app.js"
+    },
+    "keywords": [],
+    "author": "trenter39",
+    "license": "MIT",
+    "type": "module",
+    "dependencies": {
+        "base-64": "^1.0.0",
+        "bcryptjs": "^3.0.3",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^17.2.1",
+        "express": "^5.1.0",
+        "express-handlebars": "^8.0.3",
+        "jsonwebtoken": "^9.0.3",
+        "mysql2": "^3.14.2"
+    },
+    "devDependencies": {
+        "@poliklot/prettier-plugin-handlebars": "^0.3.4",
+        "nodemon": "^3.1.10",
+        "prettier": "3.9.6"
+    }
 }

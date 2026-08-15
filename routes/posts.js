@@ -6,13 +6,15 @@ import {
     getPostsTerm,
     createPost,
     updatePost,
-    deletePost
+    deletePost,
 } from '../controllers/posts.js';
 import commentRouter from './comments.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => req.query.term || req.query.q ? getPostsTerm(req, res) : getPosts(req, res));
+router.get('/', (req, res) =>
+    req.query.term || req.query.q ? getPostsTerm(req, res) : getPosts(req, res)
+);
 router.get('/:postID', getPost);
 router.post('/', verifyToken, verifyAdmin, createPost);
 router.put('/:postID', verifyToken, verifyAdmin, updatePost);

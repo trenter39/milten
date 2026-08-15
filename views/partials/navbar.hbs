@@ -1,15 +1,17 @@
-<div id="nav-row">
-    <h1><a href="/">Milten</a></h1>
-    <div class="action-captions">
+<div id='nav-row'>
+    <h1>
+        <a href='/'>Milten</a>
+    </h1>
+    <div class='action-captions'>
         {{#if isAuthenticated}}
-            <a id="user-account" href="/account">Account</a>
+            <a id='user-account' href='/account'>Account</a>
             {{#if isAdmin}}
-                <a href="/new" id="create-post-button">Create post</a>
+                <a id='create-post-button' href='/new'>Create post</a>
             {{/if}}
         {{else}}
-            <div class="auth-buttons">
-                <a href="/login" id="sign-in-button">Sign in</a>
-                <a href="/register" id="sign-up-button">Sign up</a>
+            <div class='auth-buttons'>
+                <a id='sign-in-button' href='/login'>Sign in</a>
+                <a id='sign-up-button' href='/register'>Sign up</a>
             </div>
         {{/if}}
     </div>

@@ -34,7 +34,7 @@ form.addEventListener('submit', async (event) => {
         const res = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ firstName, lastName, email, password })
+            body: JSON.stringify({ firstName, lastName, email, password }),
         });
 
         if (!res.ok) {
@@ -55,4 +55,3 @@ form.addEventListener('submit', async (event) => {
         submitBtn.disabled = false;
     }
 });
-

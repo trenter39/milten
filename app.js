@@ -1,12 +1,12 @@
 import expressHandlebars from 'express-handlebars';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import verifyToken, { verifyTokenOptional, verifyAdmin } from './config/auth.js';
 import postsRouter from './routes/posts.js';
 import authRouter from './routes/auth.js';
 import { fetchPost, queryPostsWithSearchAndPagination } from './controllers/posts.js';
 import { fetchComments } from './controllers/comments.js';
 import { renderAccount } from './controllers/account.js';
+import verifyToken, { verifyTokenOptional, verifyAdmin } from './config/auth.js';
 import { PORT } from './config/conf.js';
 
 const handlebars = expressHandlebars.create({
@@ -25,10 +25,11 @@ const handlebars = expressHandlebars.create({
             return new Date(dateString).toISOString().slice(0, 10);
         },
         trimContent: function (content) {
-            return content.trim()
+            return content
+                .trim()
                 .split(/\n{2,}|\r?\n/)
-                .filter(p => p.trim().length > 0)
-                .map(p => `<p>${p.trim()}</p>`)
+                .filter((p) => p.trim().length > 0)
+                .map((p) => `<p>${p.trim()}</p>`)
                 .join('');
         },
         tagsFormat: function (tags) {
@@ -61,8 +62,8 @@ const handlebars = expressHandlebars.create({
         },
         or: function (a, b) {
             return a || b;
-        }
-    }
+        },
+    },
 });
 
 const app = express();
@@ -80,9 +81,9 @@ app.use(express.static('public'));
 app.get('/', verifyTokenOptional, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const result = await queryPostsWithSearchAndPagination({ 
-            term: null, 
-            page 
+        const result = await queryPostsWithSearchAndPagination({
+            term: null,
+            page,
         });
 
         const isAuthenticated = !!req.user;
@@ -96,17 +97,17 @@ app.get('/', verifyTokenOptional, async (req, res) => {
                 page: result.page,
                 totalPages: result.totalPages,
                 totalCount: result.totalCount,
-                pageSize: result.pageSize
+                pageSize: result.pageSize,
             },
             isSearch: false,
             query: null,
             isAuthenticated,
             isAdmin,
-            user: req.user || null
+            user: req.user || null,
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error loading posts!");
+        res.status(500).send('Error loading posts!');
     }
 });
 
@@ -114,10 +115,10 @@ app.get('/search', verifyTokenOptional, async (req, res) => {
     try {
         const query = req.query.q || req.query.term || '';
         const page = parseInt(req.query.page) || 1;
-        
-        const result = await queryPostsWithSearchAndPagination({ 
-            term: query, 
-            page 
+
+        const result = await queryPostsWithSearchAndPagination({
+            term: query,
+            page,
         });
 
         const isAuthenticated = !!req.user;
@@ -131,17 +132,17 @@ app.get('/search', verifyTokenOptional, async (req, res) => {
                 page: result.page,
                 totalPages: result.totalPages,
                 totalCount: result.totalCount,
-                pageSize: result.pageSize
+                pageSize: result.pageSize,
             },
             isSearch: true,
             query: query,
             isAuthenticated,
             isAdmin,
-            user: req.user || null
+            user: req.user || null,
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error performing search!");
+        res.status(500).send('Error performing search!');
     }
 });
 
@@ -159,11 +160,11 @@ app.get('/post/:id', verifyTokenOptional, async (req, res) => {
             post,
             user: req.user || null,
             isAuthenticated,
-            isAdmin
+            isAdmin,
         });
     } catch (err) {
         console.log(err);
-        res.status(500).send("Error fetching post!");
+        res.status(500).send('Error fetching post!');
     }
 });
 
@@ -175,7 +176,7 @@ app.get('/login', verifyTokenOptional, async (req, res) => {
         script: '<script src="/scripts/login.js"></script>',
         isAuthenticated,
         isAdmin,
-        user: req.user || null
+        user: req.user || null,
     });
 });
 
@@ -187,7 +188,7 @@ app.get('/register', verifyTokenOptional, async (req, res) => {
         script: '<script src="/scripts/register.js"></script>',
         isAuthenticated,
         isAdmin,
-        user: req.user || null
+        user: req.user || null,
     });
 });
 
@@ -199,7 +200,7 @@ app.get('/new', verifyToken, verifyAdmin, (req, res) => {
         script: '<script src="/scripts/create.js"></script>',
         isAuthenticated,
         isAdmin,
-        user: req.user || null
+        user: req.user || null,
     });
 });
 
@@ -215,11 +216,11 @@ app.get('/update/:id', verifyToken, verifyAdmin, async (req, res) => {
             post,
             isAuthenticated,
             isAdmin,
-            user: req.user || null
+            user: req.user || null,
         });
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error loading post to update!");
+        res.status(500).send('Error loading post to update!');
     }
 });
 

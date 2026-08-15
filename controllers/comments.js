@@ -8,7 +8,7 @@ import {
     forbidden,
     notFound,
     internalServerError,
-} from '../utils/APIHelper.js';
+} from '../utils/httpResponses.js';
 
 export async function fetchComments(postID) {
     const sql = `select * from comments
@@ -78,7 +78,7 @@ export async function createComment(req, res) {
 
         const { content } = req.body || {};
         if (!content || typeof content !== 'string' || !content.trim()) {
-            return badRequest(res, "Comment content is required.");
+            return badRequest(res, 'Comment content is required.');
         }
 
         const author = `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim();
@@ -122,7 +122,7 @@ export async function updateComment(req, res) {
 
         const { content } = req.body || {};
         if (!content || typeof content !== 'string' || !content.trim()) {
-            return badRequest(res, "Comment content is required.");
+            return badRequest(res, 'Comment content is required.');
         }
 
         const [selectRows] = await db.query(
@@ -134,15 +134,14 @@ export async function updateComment(req, res) {
         if (!selectRows.length) return notFound(res, "Comment wasn't found!");
 
         const currentComment = selectRows[0];
-        if (currentComment.postID !== postID) return badRequest(res, "Comment doesn't belong to the specified post!");
+        if (currentComment.postID !== postID)
+            return badRequest(res, "Comment doesn't belong to the specified post!");
 
         const commentUserID = currentComment.userID != null ? currentComment.userID : undefined;
-        if (commentUserID !== req.user.id) return forbidden(res, "You can only edit your own comments.");
+        if (commentUserID !== req.user.id)
+            return forbidden(res, 'You can only edit your own comments.');
 
-        await db.query(
-            `update comments set content = ? where id = ?`,
-            [content.trim(), commentID]
-        );
+        await db.query(`update comments set content = ? where id = ?`, [content.trim(), commentID]);
 
         const [updated] = await db.query(
             `select * from comments
@@ -175,15 +174,19 @@ export async function deleteComment(req, res) {
         if (!checkResult.length) return notFound(res, "Comment wasn't found!");
 
         const comment = checkResult[0];
-        if (comment.postID !== postID) return badRequest(res, "Comment doesn't belong to the specified post!");
+        if (comment.postID !== postID)
+            return badRequest(res, "Comment doesn't belong to the specified post!");
 
         const isOwner = comment.userID != null && comment.userID === req.user.id;
         const isAdmin = req.user.role === 'admin';
         if (!isOwner && !isAdmin) {
-            return forbidden(res, "You can only delete your own comments. Administrators may delete any comment.");
+            return forbidden(
+                res,
+                'You can only delete your own comments. Administrators may delete any comment.'
+            );
         }
 
-        await db.query("delete from comments where id = ?", [commentID]);
+        await db.query('delete from comments where id = ?', [commentID]);
 
         return noContent(res);
     } catch (err) {
