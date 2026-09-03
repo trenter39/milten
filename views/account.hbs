@@ -15,7 +15,7 @@
     </div>
     <div class='profile-row'>
         <div class='label'>Creation date</div>
-        <div id='profile-creation-date' class='value'>{{ profile.createdAt }}</div>
+        <div id='profile-creation-date' class='value'>{{formatDate profile.createdAt}}</div>
     </div>
 </section>
 
@@ -30,7 +30,7 @@
                 </a>
                 <div class='comment-preview'>{{ this.preview }}</div>
                 <div class='comment-time' data-time='{{ this.createdAt }}'>
-                    {{ this.createdAt }}
+                    {{formatDate this.createdAt}}
                 </div>
             </div>
         {{/each}}
@@ -39,28 +39,38 @@
     <p class='no-comments-profile'>You haven't written any comments yet.</p>
 {{/if}}
 
-<button id='account-logout' class='primary'>Logout</button>
+{{#if pagination}}
+    {{#if (gt pagination.totalPages 1)}}
+        <div id='pagination' style="margin-top: 0;">
+            {{#if (gt pagination.page 1)}}
+                <a
+                    class='pagination-link'
+                    href='/account?comments_page={{subtract pagination.page 1}}'
+                >Previous</a>
+            {{/if}}
 
-<script>
-    (function () {
-        function timeAgo(iso) {
-            const d = new Date(iso);
-            const now = new Date();
-            const sec = Math.floor((now - d) / 1000);
-            if (sec < 60) return sec + ' seconds ago';
-            const min = Math.floor(sec / 60);
-            if (min < 60) return min + ' minutes ago';
-            const hr = Math.floor(min / 60);
-            if (hr < 24) return hr + ' hours ago';
-            const day = Math.floor(hr / 24);
-            if (day < 30) return day + ' days ago';
-            return d.toLocaleDateString();
-        }
-        document.querySelectorAll('.comment-time').forEach((element) => {
-            const timeDate = element.dataset.time;
-            if (timeDate) element.textContent = timeAgo(timeDate);
-        });
-        const creationDate = document.getElementById('profile-creation-date');
-        creationDate.textContent = timeAgo(creationDate.textContent);
-    })();
-</script>
+            {{#each (paginationPages pagination.page pagination.totalPages)}}
+                {{#if (eq this '...')}}
+                    <span class='pagination-ellipsis'>{{ this }}</span>
+                {{else}}
+                    {{#if (eq this ../pagination.page)}}
+                        <span class='pagination-current'>{{ this }}</span>
+                    {{else}}
+                        <a class='pagination-link' href='/account?comments_page={{ this }}'>
+                            {{ this }}
+                        </a>
+                    {{/if}}
+                {{/if}}
+            {{/each}}
+
+            {{#if (lt pagination.page pagination.totalPages)}}
+                <a
+                    class='pagination-link'
+                    href='/account?comments_page={{add pagination.page 1}}'
+                >Next</a>
+            {{/if}}
+        </div>
+    {{/if}}
+{{/if}}
+
+<button id='account-logout' class='primary'>Logout</button>

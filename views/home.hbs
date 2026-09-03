@@ -11,18 +11,20 @@
 
 {{#if isSearch}}
     {{#if query}}
-        <div style='text-align: left; margin-bottom: 10px;'>
-            <p>
-                Showing
-                {{ pagination.totalCount }}
-                result
-                {{#if (ne pagination.totalCount 1)}}
-                    s
-                {{/if}}
-                for "
-                {{ query }}"
-            </p>
-        </div>
+        {{#if (gt pagination.totalCount 0)}}
+            <div style='text-align: left; margin-bottom: 10px;'>
+                <p>
+                    Showing
+                    {{ pagination.totalCount }}
+                    result
+                    {{#if (ne pagination.totalCount 1)}}
+                        s
+                    {{/if}}
+                    for "
+                    {{ query }} "
+                </p>
+            </div>
+        {{/if}}
     {{/if}}
 {{/if}}
 
@@ -31,7 +33,7 @@
         {{#each posts}}
             <div class='post' data-date='{{formatDateData this.createdAt}}'>
                 <a class='post-link' href='/post/{{ this.id }}'>
-                    <h2 class='post-title'>{{ this.title }}</h2>
+                    <h2 class='post-title'>{{ truncateTitle this.title }}</h2>
                     <span class='post-date'>{{formatDate this.createdAt}}</span>
                 </a>
                 {{#if ../isAdmin}}
@@ -82,20 +84,24 @@
                 {{/if}}
             {{/if}}
 
-            {{#each (range 1 pagination.totalPages)}}
-                {{#if (eq this ../pagination.page)}}
-                    <span class='pagination-current'>
-                        {{ this }}
-                    </span>
+            {{#each (paginationPages pagination.page pagination.totalPages)}}
+                {{#if (eq this '...')}}
+                    <span class='pagination-ellipsis'>{{ this }}</span>
                 {{else}}
-                    {{#if ../isSearch}}
-                        <a class='pagination-link' href='/search?q={{ ../query }}&page={{ this }}'>
+                    {{#if (eq this ../pagination.page)}}
+                        <span class='pagination-current'>
                             {{ this }}
-                        </a>
+                        </span>
                     {{else}}
-                        <a class='pagination-link' href='/?page={{ this }}'>
-                            {{ this }}
-                        </a>
+                        {{#if ../isSearch}}
+                            <a class='pagination-link' href='/search?q={{ ../query }}&page={{ this }}'>
+                                {{ this }}
+                            </a>
+                        {{else}}
+                            <a class='pagination-link' href='/?page={{ this }}'>
+                                {{ this }}
+                            </a>
+                        {{/if}}
                     {{/if}}
                 {{/if}}
             {{/each}}

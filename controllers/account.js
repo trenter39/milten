@@ -1,5 +1,5 @@
 import db from '../config/db.js';
-import { fetchCommentsByUser } from './comments.js';
+import { queryCommentsByUserWithPagination } from './comments.js';
 import { notFound, internalServerError } from '../utils/httpResponses.js';
 
 async function getUserData(userID) {
@@ -49,7 +49,11 @@ export async function renderAccount(req, res) {
         const profile = await getUserData(userID);
         if (!profile) return notFound(res, 'User not found');
 
-        const comments = await fetchCommentsByUser(userID);
+        const commentsResult = await queryCommentsByUserWithPagination({
+            userID,
+            page: req.query.comments_page,
+            pageSize: req.query.pageSize,
+        });
 
         let users = [];
         const isAdmin = profile.role === 'admin';
@@ -57,7 +61,7 @@ export async function renderAccount(req, res) {
             users = await getUsersData();
         }
 
-        const formattedComments = comments.map((comment) => ({
+        const formattedComments = commentsResult.comments.map((comment) => ({
             ...comment,
             preview:
                 comment.content && comment.content.length > 150
@@ -67,12 +71,13 @@ export async function renderAccount(req, res) {
 
         res.render('account', {
             title: 'Account - Milten',
-            script: '<script src="/scripts/account.js"></script>',
+            script: '<script type="module" src="/scripts/account.js"></script>',
             isAuthenticated: true,
             isAdmin,
             user: req.user || null,
             profile,
             comments: formattedComments,
+            pagination: commentsResult,
             users,
         });
     } catch (err) {

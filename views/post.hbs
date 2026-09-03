@@ -33,7 +33,7 @@
                 data-comment-user-id='{{ this.userID }}'
             >
                 <div class='comment-header'>
-                    <div>
+                    <div class='comment-author-info'>
                         <h3>{{ this.author }}</h3>
                         <span class='comment-time'>{{formatDate this.createdAt}}</span>
                     </div>
@@ -70,5 +70,41 @@
         {{/each}}
     {{else}}
         <p id='no-comment-paragraph'>No comments yet. Be the first to start the conversation!</p>
+    {{/if}}
+    {{#if pagination}}
+        {{#if (gt pagination.totalPages 1)}}
+            <div id='pagination'>
+                {{#if (gt pagination.page 1)}}
+                    <a
+                        class='pagination-link'
+                        href='/post/{{ post.id }}?comments_page={{subtract pagination.page 1}}'
+                    >Previous</a>
+                {{/if}}
+
+                {{#each (paginationPages pagination.page pagination.totalPages)}}
+                    {{#if (eq this '...')}}
+                        <span class='pagination-ellipsis'>{{ this }}</span>
+                    {{else}}
+                        {{#if (eq this ../pagination.page)}}
+                            <span class='pagination-current'>{{ this }}</span>
+                        {{else}}
+                            <a
+                                class='pagination-link'
+                                href='/post/{{ ../post.id }}?comments_page={{ this }}'
+                            >
+                                {{ this }}
+                            </a>
+                        {{/if}}
+                    {{/if}}
+                {{/each}}
+
+                {{#if (lt pagination.page pagination.totalPages)}}
+                    <a
+                        class='pagination-link'
+                        href='/post/{{ post.id }}?comments_page={{add pagination.page 1}}'
+                    >Next</a>
+                {{/if}}
+            </div>
+        {{/if}}
     {{/if}}
 </div>

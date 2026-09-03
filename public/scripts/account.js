@@ -1,3 +1,5 @@
+import { formatDate } from './dateFormatter.js';
+
 const logoutBtn = document.getElementById('account-logout');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
@@ -52,4 +54,14 @@ if (usersTable) {
             });
         }
     });
+}
+
+document.querySelectorAll('.comment-time').forEach((element) => {
+    const timeDate = element.dataset.time;
+    if (timeDate) element.textContent = formatDate(timeDate);
+});
+
+const creationDate = document.getElementById('profile-creation-date');
+if (creationDate && creationDate.dataset.time) {
+    creationDate.textContent = formatDate(creationDate.dataset.time);
 }

@@ -1,3 +1,5 @@
+import { formatDate } from './dateFormatter.js';
+
 const section = document.getElementById('comment-section');
 const postId = section.dataset.postId;
 const form = document.getElementById('comment-form');
@@ -53,16 +55,10 @@ function appendComment(comment) {
     block.className = 'comment-block';
     block.dataset.commentId = comment.id;
     block.dataset.commentUserId = comment.userID || '';
-    const date = comment.createdAt
-        ? new Date(comment.createdAt).toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-          })
-        : '';
+    const date = comment.createdAt ? formatDate(comment.createdAt) : '';
     block.innerHTML = `
         <div class="comment-header">
-            <div>
+            <div class="comment-author-info">
                 <h3>${escapeHtml(comment.author)}</h3>
                 <span class="comment-time">${escapeHtml(date)}</span>
             </div>

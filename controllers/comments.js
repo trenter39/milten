@@ -21,6 +21,39 @@ export async function fetchComments(postID) {
     return result;
 }
 
+export async function queryCommentsWithPagination({
+    postID,
+    page = 1,
+    pageSize = 10,
+} = {}) {
+    page = Math.max(1, parseInt(page) || 1);
+    pageSize = Math.max(1, parseInt(pageSize) || 10);
+    const offset = (page - 1) * pageSize;
+
+    const commentsQuery = `
+        select * from comments
+        where postID = ?
+        order by createdAt desc
+        limit ? offset ?
+    `;
+    const [comments] = await db.query(commentsQuery, [postID, pageSize, offset]);
+
+    const [countResult] = await db.query(
+        'select count(*) as total from comments where postID = ?',
+        [postID]
+    );
+    const totalCount = countResult[0].total;
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+    return {
+        comments,
+        totalCount,
+        page,
+        pageSize,
+        totalPages,
+    };
+}
+
 export async function fetchCommentsByUser(userID) {
     const sql = `
         select c.*, p.title as postTitle, p.id as postID
@@ -34,6 +67,43 @@ export async function fetchCommentsByUser(userID) {
     if (!result.length) return [];
 
     return result;
+}
+
+export async function queryCommentsByUserWithPagination({
+    userID,
+    page = 1,
+    pageSize = 5,
+} = {}) {
+    page = Math.max(1, parseInt(page) || 1);
+    pageSize = Math.max(1, parseInt(pageSize) || 10);
+    const offset = (page - 1) * pageSize;
+
+    const [comments] = await db.query(
+        `
+        select c.*, p.title as postTitle, p.id as postID
+        from comments c
+        left join posts p on p.id = c.postID
+        where c.userID = ?
+        order by c.createdAt desc
+        limit ? offset ?
+        `,
+        [userID, pageSize, offset]
+    );
+
+    const [countResult] = await db.query(
+        'select count(*) as total from comments where userID = ?',
+        [userID]
+    );
+    const totalCount = countResult[0].total;
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+    return {
+        comments,
+        totalCount,
+        page,
+        pageSize,
+        totalPages,
+    };
 }
 
 export async function getComment(req, res) {
@@ -61,11 +131,23 @@ export async function getComments(req, res) {
         const postID = validateID(req.params.postID);
         if (!postID) return badRequest(res, 'Invalid ID');
 
-        const comments = await fetchComments(postID);
+        const result = await queryCommentsWithPagination({
+            postID,
+            page: req.query.comments_page,
+            pageSize: req.query.pageSize,
+        });
 
-        if (!comments) return notFound(res, "Comments weren't found!");
+        if (!result.totalCount) return notFound(res, "Comments weren't found!");
 
-        return ok(res, comments);
+        return ok(res, {
+            comments: result.comments,
+            pagination: {
+                page: result.page,
+                pageSize: result.pageSize,
+                totalCount: result.totalCount,
+                totalPages: result.totalPages,
+            },
+        });
     } catch (err) {
         return internalServerError(res, err);
     }

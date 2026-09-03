@@ -4,23 +4,18 @@ import cookieParser from 'cookie-parser';
 import postsRouter from './routes/posts.js';
 import authRouter from './routes/auth.js';
 import { fetchPost, queryPostsWithSearchAndPagination } from './controllers/posts.js';
-import { fetchComments } from './controllers/comments.js';
+import { queryCommentsWithPagination } from './controllers/comments.js';
 import { renderAccount } from './controllers/account.js';
 import verifyToken, { verifyTokenOptional, verifyAdmin } from './config/auth.js';
 import { PORT } from './config/conf.js';
+import { formatDate } from './public/scripts/dateFormatter.js';
 
 const handlebars = expressHandlebars.create({
     defaultLayout: 'main',
     extname: 'hbs',
     partialsDir: './views/partials',
     helpers: {
-        formatDateInput: function (dateString) {
-            return new Date(dateString).toISOString().slice(0, 16);
-        },
-        formatDate: function (dateString) {
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-US', options);
-        },
+        formatDate,
         formatDateData: function (dateString) {
             return new Date(dateString).toISOString().slice(0, 10);
         },
@@ -31,6 +26,10 @@ const handlebars = expressHandlebars.create({
                 .filter((p) => p.trim().length > 0)
                 .map((p) => `<p>${p.trim()}</p>`)
                 .join('');
+        },
+        truncateTitle: function (title) {
+            const maxLength = 120;
+            return title.length > maxLength ? `${title.slice(0, maxLength - 1)}…` : title;
         },
         tagsFormat: function (tags) {
             return tags.join(', ');
@@ -59,6 +58,24 @@ const handlebars = expressHandlebars.create({
                 arr.push(i);
             }
             return arr;
+        },
+        paginationPages: function (currentPage, totalPages) {
+            currentPage = Math.max(1, parseInt(currentPage) || 1);
+            totalPages = Math.max(1, parseInt(totalPages) || 1);
+
+            if (totalPages <= 7) return Array.from({ length: totalPages }, (_, index) => index + 1);
+            if (currentPage <= 2) return [1, 2, 3, '...', totalPages];
+            if (currentPage >= totalPages - 1)
+                return [1, '...', totalPages - 2, totalPages - 1, totalPages];
+
+            const pages = [1];
+            if (currentPage - 2 > 2) pages.push('...');
+            for (let page = Math.max(2, currentPage - 2); page <= Math.min(totalPages - 1, currentPage + 2); page++) {
+                pages.push(page);
+            }
+            if (currentPage + 2 < totalPages - 1) pages.push('...');
+            pages.push(totalPages);
+            return pages;
         },
         or: function (a, b) {
             return a || b;
@@ -150,13 +167,18 @@ app.get('/post/:id', verifyTokenOptional, async (req, res) => {
     try {
         const { id } = req.params;
         const post = await fetchPost(id);
-        const comments = await fetchComments(id);
+        const commentsResult = await queryCommentsWithPagination({
+            postID: id,
+            page: req.query.comments_page,
+            pageSize: req.query.pageSize,
+        });
         const isAuthenticated = !!req.user;
         const isAdmin = req.user?.role === 'admin';
         res.render('post', {
             title: `${post.title} - Milten`,
-            script: '<script src="/scripts/post.js"></script>',
-            comments,
+            script: '<script type="module" src="/scripts/post.js"></script>',
+            comments: commentsResult.comments,
+            pagination: commentsResult,
             post,
             user: req.user || null,
             isAuthenticated,
