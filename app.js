@@ -3,9 +3,11 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import postsRouter from './routes/posts.js';
 import authRouter from './routes/auth.js';
+import profileRouter from './routes/profile.js';
 import { fetchPost, queryPostsWithSearchAndPagination } from './controllers/posts.js';
 import { queryCommentsWithPagination } from './controllers/comments.js';
 import { renderAccount } from './controllers/account.js';
+import { renderProfile } from './controllers/profile.js';
 import verifyToken, { verifyTokenOptional, verifyAdmin } from './config/auth.js';
 import { PORT } from './config/conf.js';
 import { formatDate } from './public/scripts/dateFormatter.js';
@@ -93,6 +95,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
+app.use('/api/users', profileRouter);
 app.use(express.static('public'));
 
 app.get('/', verifyTokenOptional, async (req, res) => {
@@ -247,6 +250,13 @@ app.get('/update/:id', verifyToken, verifyAdmin, async (req, res) => {
 });
 
 app.get('/account', verifyToken, renderAccount);
+app.get('/profile/:userID', verifyTokenOptional, (req, res, next) => {
+    if (req.user && String(req.user.id) === String(req.params.userID)) {
+        return res.redirect('/account');
+    }
+
+    return next();
+}, renderProfile);
 
 app.use((req, res) => {
     res.redirect('/');

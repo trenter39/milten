@@ -17,7 +17,7 @@ const commentFields = `
     c.createdAt,
     c.updatedAt,
     c.userID,
-    coalesce(nullif(trim(concat_ws(' ', u.first_name, u.last_name)), ''), '') as author
+    coalesce(nullif(trim(concat_ws(' ', u.first_name, u.last_name)), ''), 'Deleted account') as author
 `;
 
 export async function fetchComments(postID) {

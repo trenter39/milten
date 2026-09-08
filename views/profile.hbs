@@ -1,0 +1,75 @@
+<h2 class='page-header'>Profile</h2>
+
+<section class='profile-card'>
+    <div class='profile-row'>
+        <div class='label'>First name</div>
+        <div class='value'>{{ profile.firstName }}</div>
+    </div>
+    <div class='profile-row'>
+        <div class='label'>Last name</div>
+        <div class='value'>{{ profile.lastName }}</div>
+    </div>
+    <div class='profile-row'>
+        <div class='label'>Email address</div>
+        <div class='value'>{{ profile.email }}</div>
+    </div>
+    <div class='profile-row'>
+        <div class='label'>Creation date</div>
+        <div class='value'>{{formatDate profile.createdAt}}</div>
+    </div>
+</section>
+
+<h2 class='page-header profile-comments-title'>{{ profile.firstName }}'s Comments</h2>
+
+{{#if comments.length}}
+    <div class='comments-list'>
+        {{#each comments}}
+            <div class='comment-row'>
+                <a class='comment-post-title' href='/post/{{ this.postID }}'>
+                    {{ this.postTitle }}
+                </a>
+                <div class='comment-preview'>{{ this.preview }}</div>
+                <div class='comment-time' data-time='{{ this.createdAt }}'>
+                    {{formatDate this.createdAt}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{else}}
+    <p class='no-comments-profile'>This user hasn't written any comments yet.</p>
+{{/if}}
+
+{{#if pagination}}
+    {{#if (gt pagination.totalPages 1)}}
+        <div id='pagination' style='margin-top: 0;'>
+            {{#if (gt pagination.page 1)}}
+                <a
+                    class='pagination-link'
+                    href='/profile/{{ profile.id }}?comments_page={{subtract pagination.page 1}}'
+                >Previous</a>
+            {{/if}}
+
+            {{#each (paginationPages pagination.page pagination.totalPages)}}
+                {{#if (eq this '...')}}
+                    <span class='pagination-ellipsis'>{{ this }}</span>
+                {{else}}
+                    {{#if (eq this ../pagination.page)}}
+                        <span class='pagination-current'>{{ this }}</span>
+                    {{else}}
+                        <a
+                            class='pagination-link'
+                            href='/profile/{{ ../profile.id }}?comments_page={{ this }}'
+                        >{{ this }}</a>
+                    {{/if}}
+                {{/if}}
+            {{/each}}
+
+            {{#if (lt pagination.page pagination.totalPages)}}
+                <a
+                    class='pagination-link'
+                    href='/profile/{{ profile.id }}?comments_page={{add pagination.page 1}}'
+                >Next</a>
+            {{/if}}
+        </div>
+    {{/if}}
+{{/if}}

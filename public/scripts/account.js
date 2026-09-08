@@ -146,10 +146,23 @@ if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
         openAccountModal({
             title: 'Delete account?',
-            desc: 'Your account will be deleted and your comments will remain anonymous. Are you sure?',
+            desc: 'Enter your current password to delete your account. Your comments will remain anonymous.',
             confirmText: 'Delete',
+            body: `
+                <label for="modal-delete-password">Current password</label>
+                <input id="modal-delete-password" type="password" required>
+            `,
             action: async () => {
-                const response = await fetch('/api/auth/me', { method: 'DELETE' });
+                const previousPassword = document.getElementById('modal-delete-password').value.trim();
+                if (!previousPassword) {
+                    setFormError(accountModalError, 'Current password is required.');
+                    return;
+                }
+                const response = await fetch('/api/auth/me', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ previousPassword }),
+                });
                 if (!response.ok) {
                     setFormError(accountModalError, await getErrorMessage(response, 'Account deletion failed.'));
                     return;

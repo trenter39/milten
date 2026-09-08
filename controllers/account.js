@@ -178,6 +178,21 @@ export async function updatePassword(req, res) {
 export async function deleteAccount(req, res) {
     let connection;
     try {
+        const missingFields = validateRequiredFields(req.body || {}, ['previousPassword']);
+        if (missingFields) return badRequest(res, missingFields);
+
+        const [users] = await db.query(
+            'select passwordHash from users where id = ? limit 1',
+            [req.user.id]
+        );
+        if (!users.length) return notFound(res, 'User not found');
+
+        const validPassword = await bcrypt.compare(
+            req.body.previousPassword.trim(),
+            users[0].passwordHash
+        );
+        if (!validPassword) return unauthorized(res, 'Password is incorrect');
+
         connection = await db.getConnection();
         await connection.beginTransaction();
         await connection.query('update comments set userID = null where userID = ?', [req.user.id]);

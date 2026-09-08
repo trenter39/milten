@@ -317,6 +317,14 @@ a {
     flex-shrink: 0;
 }
 
+.comment-author-link {
+    color: inherit;
+}
+
+.comment-author-link:hover h3 {
+    color: var(--green-500);
+}
+
 .comment-time {
     font-size: 13px;
     color: var(--text-gray);
@@ -796,8 +804,8 @@ input[type='submit']:hover {
     background: var(--pure-white);
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-    min-width: 448px;
-    max-width: 90vw;
+    width: min(448px, calc(100vw - 32px));
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -816,6 +824,7 @@ input[type='submit']:hover {
 .modal-confirm-desc {
     font-size: 16px;
     width: 100%;
+    box-sizing: border-box;
     color: var(--text-gray);
     margin-bottom: 20px;
     padding-inline: 24px;

@@ -34,7 +34,13 @@
             >
                 <div class='comment-header'>
                     <div class='comment-author-info'>
-                        <h3>{{ this.author }}</h3>
+                        {{#if this.userID}}
+                            <a class='comment-author-link' href='/profile/{{ this.userID }}'>
+                                <h3>{{ this.author }}</h3>
+                            </a>
+                        {{else}}
+                            <h3>{{ this.author }}</h3>
+                        {{/if}}
                         <span class='comment-time'>{{formatDate this.createdAt}}</span>
                     </div>
                     {{#if ../user}}
