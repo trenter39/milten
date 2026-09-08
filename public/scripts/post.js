@@ -203,7 +203,7 @@ function deleteComment(block) {
     const commentId = block.dataset.commentId;
     showModal({
         title: 'Delete comment?',
-        desc: 'After deletion all of its content will be deleted. Are you sure you want to delete this?',
+        desc: 'All of its content will be removed. Do you want to delete this?',
         onDelete: async () => {
             try {
                 const res = await api(`/${commentId}`, { method: 'DELETE' });

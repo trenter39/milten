@@ -9,7 +9,7 @@ if (postList) {
             <div class="modal-confirm-window">
                 <h2 class="modal-confirm-title"></h2>
                 <p class="modal-confirm-desc"></p>
-                <div class="modal-confirm-actions">
+                <div class="modal-confirm-actions" style="margin-top: 0px;">
                     <button class="modal-cancel-btn">Cancel</button>
                     <button class="modal-delete-btn">Delete</button>
                 </div>
@@ -63,7 +63,7 @@ if (postList) {
             const postID = btn.dataset.id;
             showModal({
                 title: 'Delete post?',
-                desc: 'After deletion all of its content will be deleted. Are you sure you want to delete this?',
+                desc: 'All of its content will be removed. Do you want to delete this?',
                 onDelete: async () => {
                     try {
                         const res = await fetch(`/api/posts/${postID}`, { method: 'DELETE' });

@@ -1,4 +1,4 @@
-<h2 style='margin-bottom: 20px;'>Your Account</h2>
+<h2 class='page-header'>Your Account</h2>
 
 <section class='profile-card'>
     <div class='profile-row'>
@@ -19,7 +19,7 @@
     </div>
 </section>
 
-<h2 style='margin-bottom: 20px;'>Your Comments</h2>
+<h2 class='page-header'>Your Comments</h2>
 
 {{#if comments.length}}
     <div class='comments-list'>
@@ -73,4 +73,53 @@
     {{/if}}
 {{/if}}
 
-<button id='account-logout' class='primary'>Logout</button>
+<h2 class='page-header' style='padding-top: 20px; border-top: 1px solid var(--border-light);'>Settings</h2>
+
+<section
+    class='profile-card account-actions'
+    data-first-name='{{ profile.firstName }}'
+    data-last-name='{{ profile.lastName }}'
+    data-email='{{ profile.email }}'
+>
+    <div class='account-action-row'>
+        <div>
+            <h3>Edit profile</h3>
+            <p>Update your personal information</p>
+        </div>
+        <button id='account-edit-profile' class='primary' type='button'>Edit</button>
+    </div>
+    <div class='account-action-row'>
+        <div>
+            <h3>Change password</h3>
+            <p>Update your password to keep your account secure</p>
+        </div>
+        <button id='account-change-password' class='primary' type='button'>Change</button>
+    </div>
+    <div class='account-action-row'>
+        <div>
+            <h3>Sign out</h3>
+            <p>Log out of your current session on this device</p>
+        </div>
+        <button id='account-logout' class='primary' type='button'>Sign out</button>
+    </div>
+    <div class='account-action-row'>
+        <div>
+            <h3>Delete account</h3>
+            <p>Remove your account and all associated data</p>
+        </div>
+        <button id='account-delete' class='danger' type='button'>Delete</button>
+    </div>
+</section>
+
+<div id='account-modal' class='modal-confirm-overlay' style='display: none;'>
+    <div class='modal-confirm-window' role='dialog' aria-modal='true' aria-labelledby='account-modal-title'>
+        <h2 id='account-modal-title' class='modal-confirm-title'></h2>
+        <p id='account-modal-desc' class='modal-confirm-desc'></p>
+        <div id='account-modal-body'></div>
+        <p id='account-modal-error' class='form-error' role='alert'></p>
+        <div class='modal-confirm-actions'>
+            <button id='account-modal-cancel' class='modal-cancel-btn' type='button'>Cancel</button>
+            <button id='account-modal-confirm' class='modal-delete-btn' type='button'>Confirm</button>
+        </div>
+    </div>
+</div>

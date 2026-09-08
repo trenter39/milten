@@ -17,7 +17,7 @@ import {
     validatePassword,
 } from '../utils/fieldValidator.js';
 
-function setAuthCookie(res, token) {
+export function setAuthCookie(res, token) {
     const maxAge = 1000 * 60 * 60 * 24;
     res.cookie('token', token, {
         httpOnly: true,
@@ -27,12 +27,26 @@ function setAuthCookie(res, token) {
     });
 }
 
-function clearAuthCookie(res) {
+export function clearAuthCookie(res) {
     res.clearCookie('token', {
         httpOnly: true,
         sameSite: 'lax',
         secure: NODE_ENV === 'production',
     });
+}
+
+export function createAuthToken(user) {
+    return jwt.sign(
+        {
+            id: user.id,
+            firstName: user.first_name ?? user.firstName,
+            lastName: user.last_name ?? user.lastName,
+            email: user.email,
+            role: user.role,
+        },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+    );
 }
 
 export async function register(req, res) {
@@ -113,18 +127,7 @@ export async function login(req, res) {
 
         if (!valid) return unauthorized(res, 'Invalid credentials');
 
-        const token = jwt.sign(
-            {
-                id: user.id,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                email: user.email,
-                role: user.role,
-            },
-            JWT_SECRET,
-            { expiresIn: JWT_EXPIRES_IN }
-        );
-
+        const token = createAuthToken(user);
         setAuthCookie(res, token);
 
         ok(res, {

@@ -31,7 +31,6 @@ function formatAbsoluteDate(date, now) {
     const day = String(date.getDate());
     const month = MONTHS[date.getMonth()];
     const year = date.getFullYear();
-    const currentYear = now.getFullYear();
 
     return `${month} ${day}, ${year}`;
 }

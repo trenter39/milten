@@ -10,10 +10,22 @@ import {
     internalServerError,
 } from '../utils/httpResponses.js';
 
+const commentFields = `
+    c.id,
+    c.postID,
+    c.content,
+    c.createdAt,
+    c.updatedAt,
+    c.userID,
+    coalesce(nullif(trim(concat_ws(' ', u.first_name, u.last_name)), ''), '') as author
+`;
+
 export async function fetchComments(postID) {
-    const sql = `select * from comments
-        where postID = ?
-        order by createdAt desc`;
+    const sql = `select ${commentFields}
+        from comments c
+        left join users u on u.id = c.userID
+        where c.postID = ?
+        order by c.createdAt desc`;
 
     const [result] = await db.query(sql, [postID]);
     if (!result.length) return null;
@@ -31,9 +43,11 @@ export async function queryCommentsWithPagination({
     const offset = (page - 1) * pageSize;
 
     const commentsQuery = `
-        select * from comments
-        where postID = ?
-        order by createdAt desc
+        select ${commentFields}
+        from comments c
+        left join users u on u.id = c.userID
+        where c.postID = ?
+        order by c.createdAt desc
         limit ? offset ?
     `;
     const [comments] = await db.query(commentsQuery, [postID, pageSize, offset]);
@@ -56,9 +70,10 @@ export async function queryCommentsWithPagination({
 
 export async function fetchCommentsByUser(userID) {
     const sql = `
-        select c.*, p.title as postTitle, p.id as postID
+        select ${commentFields}, p.title as postTitle
         from comments c
         left join posts p on p.id = c.postID
+        left join users u on u.id = c.userID
         where c.userID = ?
         order by c.createdAt desc
     `;
@@ -80,9 +95,10 @@ export async function queryCommentsByUserWithPagination({
 
     const [comments] = await db.query(
         `
-        select c.*, p.title as postTitle, p.id as postID
+        select ${commentFields}, p.title as postTitle
         from comments c
         left join posts p on p.id = c.postID
+        left join users u on u.id = c.userID
         where c.userID = ?
         order by c.createdAt desc
         limit ? offset ?
@@ -113,8 +129,10 @@ export async function getComment(req, res) {
         if (!postID || !commentID) return badRequest(res, 'Invalid ID');
 
         const [rows] = await db.query(
-            `select * from comments
-            where postID = ? and id = ?`,
+            `select ${commentFields}
+            from comments c
+            left join users u on u.id = c.userID
+            where c.postID = ? and c.id = ?`,
             [postID, commentID]
         );
 
@@ -163,7 +181,6 @@ export async function createComment(req, res) {
             return badRequest(res, 'Comment content is required.');
         }
 
-        const author = `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim();
         const userID = req.user.id;
 
         const [checkRows] = await db.query(
@@ -175,14 +192,16 @@ export async function createComment(req, res) {
         if (!checkRows.length) return notFound(res, "Post wasn't found!");
 
         const [result] = await db.query(
-            `insert into comments(postID, author, content, userID)
-            values(?, ?, ?, ?)`,
-            [postID, author, content.trim(), userID]
+            `insert into comments(postID, content, userID)
+            values(?, ?, ?)`,
+            [postID, content.trim(), userID]
         );
 
         const [rows] = await db.query(
-            `select * from comments
-            where id = ?`,
+            `select ${commentFields}
+            from comments c
+            left join users u on u.id = c.userID
+            where c.id = ?`,
             [result.insertId]
         );
 
@@ -226,8 +245,10 @@ export async function updateComment(req, res) {
         await db.query(`update comments set content = ? where id = ?`, [content.trim(), commentID]);
 
         const [updated] = await db.query(
-            `select * from comments
-            where id = ?`,
+            `select ${commentFields}
+            from comments c
+            left join users u on u.id = c.userID
+            where c.id = ?`,
             [commentID]
         );
 
