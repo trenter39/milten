@@ -4,6 +4,7 @@ const section = document.getElementById('comment-section');
 const postId = section.dataset.postId;
 const form = document.getElementById('comment-form');
 const commentList = section.querySelectorAll('.comment-block');
+let commentEditor;
 
 function api(path, options = {}) {
     const url = `/api/posts/${postId}/comments${path}`;
@@ -18,11 +19,47 @@ function api(path, options = {}) {
 }
 
 if (form) {
+    const trigger = form.querySelector('#comment-trigger');
+    const editorArea = form.querySelector('#comment-editor-area');
+    const editorElement = form.querySelector('#comment-editor');
+    const contentInput = form.querySelector('input[name="content"]');
+    const cancelButton = form.querySelector('#comment-cancel-button');
+
+    function openCommentEditor() {
+        if (!commentEditor) {
+            commentEditor = window.createRichTextEditor({
+                editorElement,
+                contentInput,
+            });
+        }
+
+        editorArea.hidden = false;
+        trigger.hidden = true;
+        trigger.setAttribute('aria-expanded', 'true');
+        commentEditor.focus();
+    }
+
+    function closeCommentEditor() {
+        if (commentEditor) commentEditor.clear();
+        editorArea.hidden = true;
+        trigger.hidden = false;
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.focus();
+    }
+
+    trigger.addEventListener('click', openCommentEditor);
+    cancelButton.addEventListener('click', closeCommentEditor);
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const input = document.getElementById('comment-content-input');
-        const content = input && input.value ? input.value.trim() : '';
-        if (!content) return;
+        if (!commentEditor) return;
+
+        commentEditor.sync();
+        if (commentEditor.isEmpty()) {
+            alert('Comment content is required.');
+            commentEditor.focus();
+            return;
+        }
 
         const btn = form.querySelector('#send-comment-button');
         if (btn) btn.disabled = true;
@@ -30,15 +67,15 @@ if (form) {
         try {
             const res = await api('', {
                 method: 'POST',
-                body: JSON.stringify({ content }),
+                body: JSON.stringify({ content: contentInput.value }),
             });
             const data = await res.json().catch(() => ({}));
 
             if (res.ok) {
-                input.value = '';
                 appendComment(data);
                 const noComment = document.getElementById('no-comment-paragraph');
                 if (noComment) noComment.remove();
+                closeCommentEditor();
             } else {
                 alert(data.error || 'Failed to post comment.');
             }
@@ -72,8 +109,9 @@ function appendComment(comment) {
                 </div>
             </div>
         </div>
-        <p class="comment-content">${escapeHtml(comment.content)}</p>
+        <div class="comment-content"></div>
     `;
+    block.querySelector('.comment-content').innerHTML = comment.content;
     const insertRef =
         form ||
         section.querySelector('#comment-login-prompt') ||
@@ -94,14 +132,21 @@ function escapeHtml(text) {
 function editComment(block) {
     const commentId = block.dataset.commentId;
     const contentEl = block.querySelector('.comment-content');
-    const originalText = contentEl.textContent;
+    const originalContent = contentEl.innerHTML;
 
     const formWrap = document.createElement('div');
     formWrap.className = 'comment-edit-form';
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = originalText;
-    input.className = 'comment-edit-input';
+    const editorElement = document.createElement('div');
+    editorElement.className = 'comment-edit-editor';
+    const contentInput = document.createElement('input');
+    contentInput.type = 'hidden';
+    contentInput.name = 'content';
+    formWrap.append(editorElement, contentInput);
+    const editor = window.createRichTextEditor({
+        editorElement,
+        contentInput,
+        initialContent: originalContent,
+    });
 
     const actions = document.createElement('div');
     actions.className = 'comment-edit-actions';
@@ -122,12 +167,17 @@ function editComment(block) {
     }
 
     saveBtn.addEventListener('click', async () => {
-        const newContent = input.value.trim();
-        if (newContent === originalText) {
+        editor.sync();
+        const newContent = contentInput.value;
+        if (newContent === originalContent) {
             cleanup();
             return;
         }
-        if (!newContent) return;
+        if (editor.isEmpty()) {
+            alert('Comment content is required.');
+            editor.focus();
+            return;
+        }
 
         saveBtn.disabled = true;
         try {
@@ -136,7 +186,8 @@ function editComment(block) {
                 body: JSON.stringify({ content: newContent }),
             });
             if (res.ok) {
-                contentEl.textContent = newContent;
+                const data = await res.json().catch(() => ({}));
+                contentEl.innerHTML = data.content || newContent;
                 cleanup();
             } else {
                 const data = await res.json().catch(() => ({}));
@@ -152,7 +203,7 @@ function editComment(block) {
     cancelBtn.addEventListener('click', cleanup);
 
     actions.append(cancelBtn, saveBtn);
-    formWrap.append(input, actions);
+    formWrap.append(actions);
     contentEl.style.display = 'none';
     contentEl.after(formWrap);
 }

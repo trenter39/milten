@@ -171,7 +171,8 @@ app.get('/post/:id', verifyTokenOptional, async (req, res) => {
         const isAdmin = req.user?.role === 'admin';
         res.render('post', {
             title: `${post.title} - Milten`,
-            script: '<script type="module" src="/scripts/post.js"></script>',
+            quill: true,
+            script: '<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script><script src="/scripts/postEditor.js"></script><script type="module" src="/scripts/post.js"></script>',
             comments: commentsResult.comments,
             pagination: commentsResult,
             post,

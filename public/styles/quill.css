@@ -65,7 +65,49 @@
     fill: var(--green-500);
 }
 
+/* Comment editor overrides */
+#comment-editor {
+    width: 100%;
+}
+
+#comment-editor .ql-editor,
+.comment-edit-editor .ql-editor {
+    min-height: 140px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+#comment-form .ql-toolbar,
+.comment-edit-form .ql-toolbar {
+    border-radius: 8px 8px 0 0;
+}
+
+#comment-editor.ql-container,
+.comment-edit-form .ql-container {
+    border-radius: 0 0 8px 8px;
+}
+
+#comment-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected),
+.comment-edit-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) {
+    color: var(--green-500);
+}
+
+#comment-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) .ql-stroke,
+#comment-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) .ql-stroke-miter,
+.comment-edit-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) .ql-stroke,
+.comment-edit-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) .ql-stroke-miter {
+    stroke: var(--green-500);
+}
+
+#comment-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) .ql-fill,
+.comment-edit-form .ql-toolbar :is(button:hover, button:focus, button.ql-active, .ql-picker-label:hover, .ql-picker-label:focus, .ql-picker-label.ql-active, .ql-picker-item:hover, .ql-picker-item.ql-selected) .ql-fill {
+    fill: var(--green-500);
+}
+
 @media (max-width: 480px) {
+    #input-block .ql-toolbar,
+    #comment-form .ql-toolbar,
+    .comment-edit-form .ql-toolbar,
     #input-block .ql-toolbar {
         padding: 8px 4px;
     }

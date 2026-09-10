@@ -7,15 +7,25 @@
     <h1 id='comments-section'>Comments</h1>
     {{#if user}}
         <form id='comment-form'>
-            <div id='send-comment-section'>
-                <input
-                    id='comment-content-input'
-                    type='text'
-                    name='comment-content'
-                    placeholder='Comment'
-                    required
-                />
-                <button id='send-comment-button' type='submit'>Send</button>
+            <button
+                id='comment-trigger'
+                type='button'
+                aria-expanded='false'
+                aria-controls='comment-editor-area'
+            >Send comment</button>
+            <div id='comment-editor-area' hidden>
+                <div id='comment-editor' aria-label='Comment content'></div>
+                <input type='hidden' name='content' />
+                <div id='comment-editor-actions'>
+                    <button
+                        class='comment-cancel-button'
+                        type='button'
+                    >Cancel</button>
+                    <buttonW
+                        class='comment-save-button'
+                        type='submit'
+                    >Send</button>
+                </div>
             </div>
         </form>
     {{else}}
@@ -71,7 +81,7 @@
                         {{/if}}
                     {{/if}}
                 </div>
-                <p class='comment-content'>{{ this.content }}</p>
+                <div class='comment-content'>{{{ this.content }}}</div>
             </div>
         {{/each}}
     {{else}}

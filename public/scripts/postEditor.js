@@ -1,8 +1,4 @@
-window.createPostEditor = function (form) {
-    const editorElement = form.querySelector('#post-editor');
-    const contentInput = form.querySelector('input[name="content"]');
-    const initialContent = form.querySelector('#initial-content')?.value || '';
-
+window.createRichTextEditor = function ({ editorElement, contentInput, initialContent = '' }) {
     const quill = new Quill(editorElement, {
         theme: 'snow',
         modules: {
@@ -29,5 +25,25 @@ window.createPostEditor = function (form) {
         isEmpty() {
             return quill.getText().trim().length === 0;
         },
+        clear() {
+            quill.setText('');
+            this.sync();
+        },
+        focus() {
+            quill.focus();
+        },
+        setContent(content) {
+            quill.setText('');
+            if (content) quill.clipboard.dangerouslyPasteHTML(content);
+            this.sync();
+        },
     };
+};
+
+window.createPostEditor = function (form) {
+    return window.createRichTextEditor({
+        editorElement: form.querySelector('#post-editor'),
+        contentInput: form.querySelector('input[name="content"]'),
+        initialContent: form.querySelector('#initial-content')?.value || '',
+    });
 };

@@ -9,6 +9,7 @@ import {
     notFound,
     internalServerError,
 } from '../utils/httpResponses.js';
+import { hasRichTextText, sanitizeRichText } from '../utils/sanitizeRichText.js';
 
 const commentFields = `
     c.id,
@@ -30,7 +31,7 @@ export async function fetchComments(postID) {
     const [result] = await db.query(sql, [postID]);
     if (!result.length) return null;
 
-    return result;
+    return result.map((comment) => ({ ...comment, content: sanitizeRichText(comment.content) }));
 }
 
 export async function queryCommentsWithPagination({
@@ -60,7 +61,10 @@ export async function queryCommentsWithPagination({
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
     return {
-        comments,
+        comments: comments.map((comment) => ({
+            ...comment,
+            content: sanitizeRichText(comment.content),
+        })),
         totalCount,
         page,
         pageSize,
@@ -81,7 +85,7 @@ export async function fetchCommentsByUser(userID) {
     const [result] = await db.query(sql, [userID]);
     if (!result.length) return [];
 
-    return result;
+    return result.map((comment) => ({ ...comment, content: sanitizeRichText(comment.content) }));
 }
 
 export async function queryCommentsByUserWithPagination({
@@ -114,7 +118,10 @@ export async function queryCommentsByUserWithPagination({
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
     return {
-        comments,
+        comments: comments.map((comment) => ({
+            ...comment,
+            content: sanitizeRichText(comment.content),
+        })),
         totalCount,
         page,
         pageSize,
@@ -138,7 +145,7 @@ export async function getComment(req, res) {
 
         if (!rows.length) return notFound(res, "Comment wasn't found!");
 
-        return ok(res, rows[0]);
+        return ok(res, { ...rows[0], content: sanitizeRichText(rows[0].content) });
     } catch (err) {
         return internalServerError(res, err);
     }
@@ -177,7 +184,8 @@ export async function createComment(req, res) {
         if (!postID) return badRequest(res, 'Invalid ID');
 
         const { content } = req.body || {};
-        if (!content || typeof content !== 'string' || !content.trim()) {
+        const safeContent = sanitizeRichText(content);
+        if (!hasRichTextText(safeContent)) {
             return badRequest(res, 'Comment content is required.');
         }
 
@@ -194,7 +202,7 @@ export async function createComment(req, res) {
         const [result] = await db.query(
             `insert into comments(postID, content, userID)
             values(?, ?, ?)`,
-            [postID, content.trim(), userID]
+            [postID, safeContent, userID]
         );
 
         const [rows] = await db.query(
@@ -206,6 +214,7 @@ export async function createComment(req, res) {
         );
 
         const createdComment = rows[0];
+        createdComment.content = sanitizeRichText(createdComment.content);
         createdComment.createdAt = createdComment.createdAt.toISOString();
         createdComment.updatedAt = createdComment.updatedAt.toISOString();
 
@@ -222,7 +231,8 @@ export async function updateComment(req, res) {
         if (!postID || !commentID) return badRequest(res, 'Invalid ID');
 
         const { content } = req.body || {};
-        if (!content || typeof content !== 'string' || !content.trim()) {
+        const safeContent = sanitizeRichText(content);
+        if (!hasRichTextText(safeContent)) {
             return badRequest(res, 'Comment content is required.');
         }
 
@@ -242,7 +252,7 @@ export async function updateComment(req, res) {
         if (commentUserID !== req.user.id)
             return forbidden(res, 'You can only edit your own comments.');
 
-        await db.query(`update comments set content = ? where id = ?`, [content.trim(), commentID]);
+        await db.query(`update comments set content = ? where id = ?`, [safeContent, commentID]);
 
         const [updated] = await db.query(
             `select ${commentFields}
@@ -253,6 +263,7 @@ export async function updateComment(req, res) {
         );
 
         const updatedComment = updated[0];
+        updatedComment.content = sanitizeRichText(updatedComment.content);
         updatedComment.createdAt = updatedComment.createdAt.toISOString();
         updatedComment.updatedAt = updatedComment.updatedAt.toISOString();
 

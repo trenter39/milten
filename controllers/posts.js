@@ -9,12 +9,12 @@ import {
     internalServerError,
 } from '../utils/httpResponses.js';
 import { validateRequiredFields } from '../utils/fieldValidator.js';
-import { hasPostText, sanitizePostContent } from '../utils/sanitizePostContent.js';
+import { hasRichTextText, sanitizeRichText } from '../utils/sanitizeRichText.js';
 
 export async function fetchPost(id) {
     const [result] = await db.query('select * from posts where id = ?', [id]);
     if (!result.length) return null;
-    result[0].content = sanitizePostContent(result[0].content);
+    result[0].content = sanitizeRichText(result[0].content);
     return result[0];
 }
 
@@ -26,7 +26,7 @@ export async function fetchPosts({ mode = 'api' } = {}) {
 
     const [result] = await db.query(sql);
     for (const post of result) {
-        post.content = sanitizePostContent(post.content);
+        post.content = sanitizeRichText(post.content);
     }
     return result;
 }
@@ -89,9 +89,9 @@ export async function createPost(req, res) {
         if (missingFields) return badRequest(res, missingFields);
 
         const { title, category } = req.body;
-        const content = sanitizePostContent(req.body.content);
+        const content = sanitizeRichText(req.body.content);
 
-        if (!hasPostText(content)) return badRequest(res, 'Content cannot be empty');
+        if (!hasRichTextText(content)) return badRequest(res, 'Content cannot be empty');
 
         const [result] = await db.query(
             `insert into posts(title, content, category)
@@ -129,9 +129,9 @@ export async function updatePost(req, res) {
         if (missingFields) return badRequest(res, missingFields);
 
         let { title, category } = req.body;
-        const content = sanitizePostContent(req.body.content);
+        const content = sanitizeRichText(req.body.content);
 
-        if (!hasPostText(content)) return badRequest(res, 'Content cannot be empty');
+        if (!hasRichTextText(content)) return badRequest(res, 'Content cannot be empty');
 
         const [rows] = await db.query('select * from posts where id = ?', [id]);
         if (!rows.length) return notFound(res, 'Post not found!');

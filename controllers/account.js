@@ -16,6 +16,7 @@ import {
     validateEmail,
     validatePassword,
 } from '../utils/fieldValidator.js';
+import { richTextToPlainText } from '../utils/sanitizeRichText.js';
 
 async function getUserData(userID) {
     const [rows] = await db.query(
@@ -78,10 +79,7 @@ export async function renderAccount(req, res) {
 
         const formattedComments = commentsResult.comments.map((comment) => ({
             ...comment,
-            preview:
-                comment.content && comment.content.length > 150
-                    ? comment.content.slice(0, 150) + '...'
-                    : comment.content,
+            preview: richTextToPlainText(comment.content).slice(0, 150),
         }));
 
         res.render('account', {

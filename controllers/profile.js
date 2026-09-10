@@ -6,6 +6,7 @@ import {
     notFound,
     internalServerError,
 } from '../utils/httpResponses.js';
+import { richTextToPlainText } from '../utils/sanitizeRichText.js';
 
 function parseProfileID(value) {
     if (!/^\d+$/.test(String(value))) return null;
@@ -46,10 +47,7 @@ async function getProfilePageData(userID, req) {
 
     const comments = commentsResult.comments.map((comment) => ({
         ...comment,
-        preview:
-            comment.content && comment.content.length > 150
-                ? `${comment.content.slice(0, 150)}...`
-                : comment.content,
+        preview: richTextToPlainText(comment.content).slice(0, 150),
     }));
 
     return { profile, comments, pagination: commentsResult };

@@ -65,9 +65,7 @@ function escapeText(text) {
         .replace(/'/g, '&#39;');
 }
 
-function formatLegacyText(content) {
-    if (/<\/?[a-z][^>]*>/i.test(content)) return content;
-
+export function normalizeLegacyPlainText(content) {
     return content
         .split(/\r?\n+/)
         .map((line) => line.trim())
@@ -76,25 +74,41 @@ function formatLegacyText(content) {
         .join('');
 }
 
-export function sanitizePostContent(content) {
+export function sanitizeRichText(content) {
     if (typeof content !== 'string') return '';
 
-    return sanitizeHtml(formatLegacyText(content), sanitizeOptions)
+    const normalized = /<\/?[a-z][^>]*>/i.test(content)
+        ? content
+        : normalizeLegacyPlainText(content);
+
+    return sanitizeHtml(normalized, sanitizeOptions)
         .replace(/&nbsp;|&#160;|\u00a0/gi, ' ')
         .trim();
 }
 
-export function hasPostText(content) {
+export function hasRichTextText(content) {
     if (typeof content !== 'string') return false;
 
     const textOnly = sanitizeHtml(content, {
         allowedTags: [],
         allowedAttributes: {},
     })
-        .replace(/&nbsp;|&#160;/gi, ' ')
+        .replace(/&nbsp;|&#160;|\u00a0/gi, ' ')
         .trim();
 
     return textOnly.length > 0;
+}
+
+export function richTextToPlainText(content) {
+    if (typeof content !== 'string') return '';
+
+    return sanitizeHtml(sanitizeRichText(content), {
+        allowedTags: [],
+        allowedAttributes: {},
+    })
+        .replace(/&nbsp;|&#160;|\u00a0/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 export { sanitizeOptions };
