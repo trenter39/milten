@@ -1,5 +1,6 @@
 const form = document.getElementById('input-block');
 const errorEl = document.getElementById('form-error');
+const postEditor = window.createPostEditor(form);
 
 function setError(message) {
     if (!message) {
@@ -14,6 +15,12 @@ function setError(message) {
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     setError('');
+    postEditor.sync();
+
+    if (postEditor.isEmpty()) {
+        setError('Content cannot be empty.');
+        return;
+    }
 
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());

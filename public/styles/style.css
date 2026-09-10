@@ -265,6 +265,52 @@ a {
     margin-bottom: 16px;
 }
 
+#post-content ul,
+#post-content ol {
+    margin: 0 0 16px 24px;
+    padding-left: 20px;
+}
+
+#post-content blockquote {
+    margin: 0 0 16px;
+    padding: 10px 16px;
+    border-left: 4px solid var(--green-300);
+    background: #f5f7f2;
+    color: var(--text-gray);
+}
+
+#post-content pre,
+#post-content code {
+    font-family: Consolas, 'Courier New', monospace;
+}
+
+#post-content pre {
+    overflow-x: auto;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    background: #f1f1f1;
+    color: var(--pure-black);
+    text-align: left;
+    white-space: pre;
+}
+
+#post-content code {
+    padding: 2px 4px;
+    border-radius: 3px;
+    background: #f1f1f1;
+}
+
+#post-content pre code {
+    padding: 0;
+    background: transparent;
+}
+
+#post-content a {
+    color: var(--green-500);
+    text-decoration: underline;
+}
+
 /* COMMENTS SECTION */
 #comments-section {
     padding-top: 20px;

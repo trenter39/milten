@@ -2,7 +2,10 @@
     <h2 class='page-header'>New post</h2>
     <div id='form-error' class='form-error' style='display: none;'></div>
     <input type='text' name='title' placeholder='Title' maxlength='255' required />
-    <textarea name='content' placeholder='Content' required></textarea>
+    <div>
+        <div id='post-editor' aria-label='Post content'></div>
+        <input type='hidden' name='content' />
+    </div>
     <input type='text' name='category' placeholder='Category' maxlength='100' required />
     <input type='submit' value='Create' />
 </form>

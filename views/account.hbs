@@ -22,65 +22,55 @@
 <h2 class='page-header'>Your Comments</h2>
 
 {{#if comments.length}}
-    <div class='comments-list'>
-        {{#each comments}}
-            <div class='comment-row'>
-                <a class='comment-post-title' href='/post/{{ this.postID }}'>
-                    {{ this.postTitle }}
-                </a>
-                <div class='comment-preview'>{{ this.preview }}</div>
-                <div class='comment-time' data-time='{{ this.createdAt }}'>
-                    {{formatDate this.createdAt}}
-                </div>
-            </div>
-        {{/each}}
+<div class='comments-list'>
+    {{#each comments}}
+    <div class='comment-row'>
+        <a class='comment-post-title' href='/post/{{ this.postID }}'>
+            {{ this.postTitle }}
+        </a>
+        <div class='comment-preview'>{{ this.preview }}</div>
+        <div class='comment-time' data-time='{{ this.createdAt }}'>
+            {{formatDate this.createdAt}}
+        </div>
     </div>
+    {{/each}}
+</div>
 {{else}}
-    <p class='no-comments-profile'>You haven't written any comments yet.</p>
+<p class='no-comments-profile'>You haven't written any comments yet.</p>
 {{/if}}
 
 {{#if pagination}}
-    {{#if (gt pagination.totalPages 1)}}
-        <div id='pagination' style="margin-top: 0;">
-            {{#if (gt pagination.page 1)}}
-                <a
-                    class='pagination-link'
-                    href='/account?comments_page={{subtract pagination.page 1}}'
-                >Previous</a>
-            {{/if}}
-
-            {{#each (paginationPages pagination.page pagination.totalPages)}}
-                {{#if (eq this '...')}}
-                    <span class='pagination-ellipsis'>{{ this }}</span>
-                {{else}}
-                    {{#if (eq this ../pagination.page)}}
-                        <span class='pagination-current'>{{ this }}</span>
-                    {{else}}
-                        <a class='pagination-link' href='/account?comments_page={{ this }}'>
-                            {{ this }}
-                        </a>
-                    {{/if}}
-                {{/if}}
-            {{/each}}
-
-            {{#if (lt pagination.page pagination.totalPages)}}
-                <a
-                    class='pagination-link'
-                    href='/account?comments_page={{add pagination.page 1}}'
-                >Next</a>
-            {{/if}}
-        </div>
+{{#if (gt pagination.totalPages 1)}}
+<div id='pagination' style="margin-top: 0;">
+    {{#if (gt pagination.page 1)}}
+    <a class='pagination-link' href='/account?comments_page={{subtract pagination.page 1}}'>Previous</a>
     {{/if}}
+
+    {{#each (paginationPages pagination.page pagination.totalPages)}}
+    {{#if (eq this '...')}}
+    <span class='pagination-ellipsis'>{{ this }}</span>
+    {{else}}
+    {{#if (eq this ../pagination.page)}}
+    <span class='pagination-current'>{{ this }}</span>
+    {{else}}
+    <a class='pagination-link' href='/account?comments_page={{ this }}'>
+        {{ this }}
+    </a>
+    {{/if}}
+    {{/if}}
+    {{/each}}
+
+    {{#if (lt pagination.page pagination.totalPages)}}
+    <a class='pagination-link' href='/account?comments_page={{add pagination.page 1}}'>Next</a>
+    {{/if}}
+</div>
+{{/if}}
 {{/if}}
 
 <h2 class='page-header' style='padding-top: 20px; border-top: 1px solid var(--border-light);'>Settings</h2>
 
-<section
-    class='profile-card account-actions'
-    data-first-name='{{ profile.firstName }}'
-    data-last-name='{{ profile.lastName }}'
-    data-email='{{ profile.email }}'
->
+<section class='profile-card account-actions' data-first-name='{{ profile.firstName }}'
+    data-last-name='{{ profile.lastName }}' data-email='{{ profile.email }}'>
     <div class='account-action-row'>
         <div>
             <h3>Edit profile</h3>

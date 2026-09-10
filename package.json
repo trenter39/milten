@@ -18,7 +18,9 @@
         "express": "^5.1.0",
         "express-handlebars": "^8.0.3",
         "jsonwebtoken": "^9.0.3",
-        "mysql2": "^3.14.2"
+        "mysql2": "^3.14.2",
+        "quill": "^2.0.3",
+        "sanitize-html": "^2.17.7"
     },
     "devDependencies": {
         "@poliklot/prettier-plugin-handlebars": "^0.3.4",

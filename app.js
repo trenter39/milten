@@ -21,14 +21,6 @@ const handlebars = expressHandlebars.create({
         formatDateData: function (dateString) {
             return new Date(dateString).toISOString().slice(0, 10);
         },
-        trimContent: function (content) {
-            return content
-                .trim()
-                .split(/\n{2,}|\r?\n/)
-                .filter((p) => p.trim().length > 0)
-                .map((p) => `<p>${p.trim()}</p>`)
-                .join('');
-        },
         truncateTitle: function (title) {
             const maxLength = 120;
             return title.length > maxLength ? `${title.slice(0, maxLength - 1)}…` : title;
@@ -222,7 +214,8 @@ app.get('/new', verifyToken, verifyAdmin, (req, res) => {
     const isAdmin = req.user?.role === 'admin';
     res.render('new', {
         title: 'Create Post - Milten',
-        script: '<script src="/scripts/create.js"></script>',
+        quill: true,
+        script: '<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script><script src="/scripts/postEditor.js"></script><script src="/scripts/create.js"></script>',
         isAuthenticated,
         isAdmin,
         user: req.user || null,
@@ -237,7 +230,8 @@ app.get('/update/:id', verifyToken, verifyAdmin, async (req, res) => {
         const isAdmin = req.user?.role === 'admin';
         res.render('update', {
             title: 'Update Post - Milten',
-            script: '<script src="/scripts/update.js"></script>',
+            quill: true,
+            script: '<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script><script src="/scripts/postEditor.js"></script><script src="/scripts/update.js"></script>',
             post,
             isAuthenticated,
             isAdmin,

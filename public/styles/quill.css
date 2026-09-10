@@ -1,0 +1,72 @@
+#post-editor {
+    min-height: 300px;
+    width: 100%;
+    background: var(--pure-white);
+}
+
+#post-editor .ql-editor {
+    min-height: 260px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+#input-block .ql-toolbar,
+#post-editor.ql-container {
+    border-color: var(--input-border);
+}
+
+#input-block .ql-toolbar {
+    border-radius: 8px 8px 0 0;
+}
+
+#post-editor.ql-container {
+    min-height: 260px;
+    border-radius: 0 0 8px 8px;
+}
+
+#input-block .ql-toolbar button:hover,
+#input-block .ql-toolbar button:focus,
+#input-block .ql-toolbar button.ql-active,
+#input-block .ql-toolbar .ql-picker-label:hover,
+#input-block .ql-toolbar .ql-picker-label:focus,
+#input-block .ql-toolbar .ql-picker-label.ql-active,
+#input-block .ql-toolbar .ql-picker-item:hover,
+#input-block .ql-toolbar .ql-picker-item.ql-selected {
+    color: var(--green-500);
+}
+
+#input-block .ql-toolbar button:hover .ql-stroke,
+#input-block .ql-toolbar button:focus .ql-stroke,
+#input-block .ql-toolbar button.ql-active .ql-stroke,
+#input-block .ql-toolbar .ql-picker-label:hover .ql-stroke,
+#input-block .ql-toolbar .ql-picker-label:focus .ql-stroke,
+#input-block .ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+#input-block .ql-toolbar .ql-picker-item:hover .ql-stroke,
+#input-block .ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
+#input-block .ql-toolbar button:hover .ql-stroke-miter,
+#input-block .ql-toolbar button:focus .ql-stroke-miter,
+#input-block .ql-toolbar button.ql-active .ql-stroke-miter,
+#input-block .ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
+#input-block .ql-toolbar .ql-picker-label:focus .ql-stroke-miter,
+#input-block .ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
+#input-block .ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
+#input-block .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter {
+    stroke: var(--green-500);
+}
+
+#input-block .ql-toolbar button:hover .ql-fill,
+#input-block .ql-toolbar button:focus .ql-fill,
+#input-block .ql-toolbar button.ql-active .ql-fill,
+#input-block .ql-toolbar .ql-picker-label:hover .ql-fill,
+#input-block .ql-toolbar .ql-picker-label:focus .ql-fill,
+#input-block .ql-toolbar .ql-picker-label.ql-active .ql-fill,
+#input-block .ql-toolbar .ql-picker-item:hover .ql-fill,
+#input-block .ql-toolbar .ql-picker-item.ql-selected .ql-fill {
+    fill: var(--green-500);
+}
+
+@media (max-width: 480px) {
+    #input-block .ql-toolbar {
+        padding: 8px 4px;
+    }
+}
