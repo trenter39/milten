@@ -9,6 +9,12 @@ import {
     deletePost,
 } from '../controllers/posts.js';
 import commentRouter from './comments.js';
+import { getLikeStatus, likePost, unlikePost } from '../controllers/likes.js';
+import {
+    getBookmarkStatus,
+    bookmarkPost,
+    unbookmarkPost,
+} from '../controllers/bookmarks.js';
 
 const router = express.Router();
 
@@ -19,6 +25,13 @@ router.get('/:postID', getPost);
 router.post('/', verifyToken, verifyAdmin, createPost);
 router.put('/:postID', verifyToken, verifyAdmin, updatePost);
 router.delete('/:postID', verifyToken, verifyAdmin, deletePost);
+
+router.get('/:postID/likes', verifyToken, getLikeStatus);
+router.post('/:postID/likes', verifyToken, likePost);
+router.delete('/:postID/likes', verifyToken, unlikePost);
+router.get('/:postID/bookmarks', verifyToken, getBookmarkStatus);
+router.post('/:postID/bookmarks', verifyToken, bookmarkPost);
+router.delete('/:postID/bookmarks', verifyToken, unbookmarkPost);
 
 router.use('/:postID/comments', commentRouter);
 

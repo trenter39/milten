@@ -3,6 +3,30 @@
     <span>{{ post.category }} | {{formatDate post.createdAt}}</span>
 </div>
 <div id='post-content'>{{{post.content}}}</div>
+<div id='interaction-block' aria-label='Post interactions'>
+    <button
+        class='interaction-button'
+        id='like-button'
+        type='button'
+        aria-pressed='false'
+        aria-busy='true'
+        disabled
+    >
+        <img src='/icons/heart-unfilled.svg' alt='' aria-hidden='true' />
+        <span></span>
+    </button>
+    <button
+        class='interaction-button'
+        id='bookmark-button'
+        type='button'
+        aria-pressed='false'
+        aria-busy='true'
+        disabled
+    >
+        <img src='/icons/bookmark-unfilled.svg' alt='' aria-hidden='true' />
+        <span></span>
+    </button>
+</div>
 <div id='comment-section' data-post-id='{{ post.id }}'>
     <h1 id='comments-section'>Comments</h1>
     {{#if user}}
@@ -21,7 +45,7 @@
                         class='comment-cancel-button'
                         type='button'
                     >Cancel</button>
-                    <buttonW
+                    <button
                         class='comment-save-button'
                         type='submit'
                     >Send</button>

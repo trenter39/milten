@@ -18,12 +18,94 @@ function api(path, options = {}) {
     });
 }
 
+function interactionApi(type, options = {}) {
+    return fetch(`/api/posts/${postId}/${type}`, {
+        ...options,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+        },
+    });
+}
+
+async function setupInteraction(buttonId, type, stateKey, inactiveLabel, activeLabel, inactiveIcon, activeIcon) {
+    const button = document.getElementById(buttonId);
+    if (!button) return;
+
+    const label = button.querySelector('span');
+    const icon = button.querySelector('img');
+    let active = false;
+
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    label.textContent = 'Loading...';
+    try {
+        const res = await interactionApi(type, { method: 'GET' });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+            active = Boolean(data[stateKey]);
+            label.textContent = active ? activeLabel : inactiveLabel;
+            icon.src = active ? activeIcon : inactiveIcon;
+            button.setAttribute('aria-pressed', String(active));
+        } else {
+            label.textContent = 'Unavailable';
+        }
+    } catch (_) {
+        label.textContent = 'Unavailable';
+    } finally {
+        button.removeAttribute('aria-busy');
+        button.disabled = label.textContent === 'Unavailable';
+    }
+
+    button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+            const res = await interactionApi(type, { method: active ? 'DELETE' : 'POST' });
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                alert(data.error || `Failed to update ${type}.`);
+                return;
+            }
+
+            active = !active;
+            label.textContent = active ? activeLabel : inactiveLabel;
+            icon.src = active ? activeIcon : inactiveIcon;
+            button.setAttribute('aria-pressed', String(active));
+        } catch (_) {
+            alert(`Failed to update ${type}.`);
+        } finally {
+            button.disabled = false;
+        }
+    });
+}
+
+setupInteraction(
+    'like-button',
+    'likes',
+    'liked',
+    'Like',
+    'Liked',
+    '/icons/heart-unfilled.svg',
+    '/icons/heart-filled.svg'
+);
+setupInteraction(
+    'bookmark-button',
+    'bookmarks',
+    'bookmarked',
+    'Bookmark',
+    'Bookmarked',
+    '/icons/bookmark-unfilled.svg',
+    '/icons/bookmark-filled.svg'
+);
+
 if (form) {
     const trigger = form.querySelector('#comment-trigger');
     const editorArea = form.querySelector('#comment-editor-area');
     const editorElement = form.querySelector('#comment-editor');
     const contentInput = form.querySelector('input[name="content"]');
-    const cancelButton = form.querySelector('#comment-cancel-button');
+    const cancelButton = form.querySelector('.comment-cancel-button');
 
     function openCommentEditor() {
         if (!commentEditor) {

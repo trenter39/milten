@@ -72,3 +72,35 @@ CREATE TABLE `comments` (
   KEY `postID` (`postID`),
   CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`postID`) REFERENCES `posts` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Table structure for table `likes`;
+--
+
+DROP TABLE IF EXISTS `likes`;
+
+CREATE TABLE likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    postID INT NOT NULL,
+    userID INT NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_like (userID, postID),
+    CONSTRAINT fk_likes_post FOREIGN KEY (postID) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_likes_user FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
+);
+
+--
+-- Table structure for table `bookmarks`;
+--
+
+DROP TABLE IF EXISTS `bookmarks`;
+
+CREATE TABLE bookmarks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    postID INT NOT NULL,
+    userID INT NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_bookmark (userID, postID),
+    CONSTRAINT fk_bookmarks_post FOREIGN KEY (postID) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT fk_bookmarks_user FOREIGN KEY (userID) REFERENCES users(id) ON DELETE CASCADE
+);
