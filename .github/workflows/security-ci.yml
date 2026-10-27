@@ -1,0 +1,136 @@
+name: REST API Security Gate Pipeline
+
+on:
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+permissions:
+    contents: read
+
+jobs:
+    static-analysis:
+        name: 'Phase 1: Static Analysis & OpenAPI Linting'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v7
+
+            - name: Set up Node.js 24
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+
+            # Verification of OpenAPI contract compliance
+            - name: Lint OpenAPI Specification (Spectral)
+              run: npx --yes @stoplight/spectral-cli@latest lint docs/openapi.json --ruleset .spectral.yml
+
+            # Static code analysis (SAST)
+            - name: Run SAST Scanner (Semgrep)
+              run: |
+                  pip install semgrep
+                  semgrep scan --config auto
+
+    dast-and-fuzzing:
+        name: 'Phase 2: Ephemeral Deployment & Dynamic Fuzzing'
+        needs: static-analysis
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v7
+
+            - name: Set up Node.js 24
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+
+            # Deploying an isolated environment
+            - name: Start Staging API Container
+              run: |
+                  docker compose up -d --build
+
+                  for attempt in {1..30}; do
+                    if curl --fail --silent --show-error http://localhost:8080/ > /dev/null; then
+                      echo "Staging API is ready."
+                      exit 0
+                    fi
+
+                    if ! docker compose ps --services --filter status=running | grep -q '^app$'; then
+                      echo "Staging API container stopped before becoming ready."
+                      docker compose logs app db
+                      exit 1
+                    fi
+
+                    echo "Waiting for the staging API (attempt ${attempt}/30)..."
+                    sleep 2
+                  done
+
+                  echo "Staging API did not become ready in 60 seconds."
+                  docker compose logs app db
+                  exit 1
+
+            # Dynamic endpoint fuzzing based on OpenAPI
+            - name: Run Schemathesis API Fuzzing (BOLA, Payload & Boundary Testing)
+              continue-on-error: true
+              run: |
+                  pip install schemathesis
+                  st run docs/openapi.json \
+                    --url http://localhost:8080 \
+                    --checks all \
+                    --max-examples=100 \
+                    --report json \
+                    --report-json-path vulnerabilities.json
+
+            - name: Run OWASP API Threat Checks
+              run: |
+                  docker compose exec -T \
+                    -e BASE_URL=http://localhost:8080 \
+                    -e JWT_SECRET=jwt_secret \
+                    app npm run security:test
+
+            # Preservation of scanning artifacts
+            - name: Upload Scan Results
+              uses: actions/upload-artifact@v7
+              with:
+                  name: vulnerability-report
+                  path: vulnerabilities.json
+
+            - name: Stop Staging Environment
+              if: always()
+              run: docker compose down --volumes
+
+    security-gate:
+        name: 'Phase 3: Risk Evaluation & Automated Gatekeeping'
+        needs: dast-and-fuzzing
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v7
+
+            - name: Download Scan Results
+              uses: actions/download-artifact@v8
+              with:
+                  name: vulnerability-report
+
+            # Evaluating CVSS Gate >= 7.0 and making a decision to block a build
+            - name: Evaluate Security Gate Threshold
+              run: |
+                  python3 -c "
+                  import json, sys
+
+                  try:
+                      with open('vulnerabilities.json') as f:
+                          data = json.load(f)
+
+                      # Looking for vulnerabilities with CVSS >= 7.0
+                      critical_vulns = [v for v in data.get('vulnerabilities', []) if v.get('cvss', 0) >= 7.0]
+
+                      if critical_vulns:
+                          print(f'::error::Security Gate Failed: Found {len(critical_vulns)} vulnerabilities with CVSS >= 7.0!')
+                          sys.exit(1)
+                      else:
+                          print('Security Gate Passed: No high/critical severity vulnerabilities found.')
+                  except FileNotFoundError:
+                      print('No vulnerabilities detected or report empty.')
+                  "

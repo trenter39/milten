@@ -13,6 +13,7 @@ import {
 } from '../utils/httpResponses.js';
 import {
     validateRequiredFields,
+    validateMaxLength,
     validateEmail,
     validatePassword,
 } from '../utils/fieldValidator.js';
@@ -110,6 +111,11 @@ export async function updateProfile(req, res) {
         const firstName = req.body.firstName.trim();
         const lastName = req.body.lastName.trim();
         const email = req.body.email.trim();
+        const lengthError = validateMaxLength(
+            { firstName, lastName, email },
+            { firstName: 150, lastName: 150, email: 100 }
+        );
+        if (lengthError) return badRequest(res, lengthError);
         const emailError = validateEmail(email);
         if (emailError) return badRequest(res, emailError);
 

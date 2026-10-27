@@ -8,11 +8,23 @@ export function validateRequiredFields(body, fields) {
     return null;
 }
 
+export function validateMaxLength(body, fields) {
+    for (const [field, maxLength] of Object.entries(fields)) {
+        if (body[field].trim().length > maxLength) {
+            return `Field ${field} must be ${maxLength} characters or fewer`;
+        }
+    }
+    return null;
+}
+
 export function validateEmail(email) {
     const trimmedEmail = email.trim();
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex =
+        /^[a-zA-Z0-9_%+-]+(?:\.[a-zA-Z0-9_%+-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+    const atIndex = trimmedEmail.indexOf('@');
+    const localPartLength = atIndex > 0 ? atIndex : 0;
 
-    if (!emailRegex.test(trimmedEmail)) {
+    if (trimmedEmail.length > 254 || localPartLength > 64 || !emailRegex.test(trimmedEmail)) {
         return 'Please enter a valid email address.';
     }
 

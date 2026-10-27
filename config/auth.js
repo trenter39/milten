@@ -34,4 +34,12 @@ export function verifyAdmin(req, res, next) {
     next();
 }
 
+export function verifyUserResource(req, res, next) {
+    if (String(req.user.id) !== String(req.params.userID)) {
+        return forbidden(res, 'You can only access your own user data');
+    }
+
+    return next();
+}
+
 export default verifyToken;

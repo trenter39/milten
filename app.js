@@ -64,7 +64,11 @@ const handlebars = expressHandlebars.create({
 
             const pages = [1];
             if (currentPage - 2 > 2) pages.push('...');
-            for (let page = Math.max(2, currentPage - 2); page <= Math.min(totalPages - 1, currentPage + 2); page++) {
+            for (
+                let page = Math.max(2, currentPage - 2);
+                page <= Math.min(totalPages - 1, currentPage + 2);
+                page++
+            ) {
                 pages.push(page);
             }
             if (currentPage + 2 < totalPages - 1) pages.push('...');
@@ -85,9 +89,92 @@ app.set('views', './views');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+const apiQueryIntegerNames = ['page', 'comments_page', 'likes_page', 'bookmarks_page', 'pageSize'];
+const maxApiPageValue = 1000;
+const authRateLimitWindowMs = 60 * 1000;
+const authRateLimitMaxRequests = 100;
+const authRateLimitByAddress = new Map();
+
+function isPositiveInteger(value) {
+    return typeof value === 'string' && /^\d+$/.test(value) && BigInt(value) > 0n;
+}
+
+function validateApiInput(req, res, next) {
+    const query = { ...req.query };
+    const path = req.path;
+
+    for (const name of ['term', 'q']) {
+        const value = query[name];
+        if (Array.isArray(value)) {
+            return res.status(400).json({ error: `${name} must be a single value` });
+        }
+    }
+
+    for (const name of apiQueryIntegerNames) {
+        const value = query[name];
+        if (value !== undefined && !isPositiveInteger(value)) {
+            return res.status(400).json({ error: `${name} must be a positive integer` });
+        }
+        if (value !== undefined) {
+            query[name] = String(Math.min(Number(value), maxApiPageValue));
+        }
+    }
+
+    const normalizedQuery = new URLSearchParams(query).toString();
+    req.url = `${path}${normalizedQuery ? `?${normalizedQuery}` : ''}`;
+
+    const pathSegments = req.path.split('/').filter(Boolean);
+    const idIndexes = [];
+    if (pathSegments[0] === 'posts' || pathSegments[0] === 'users') {
+        idIndexes.push(1);
+    }
+    if (pathSegments[0] === 'posts' && pathSegments[2] === 'comments') {
+        idIndexes.push(3);
+    }
+
+    for (const index of idIndexes) {
+        if (pathSegments[index] !== undefined && !isPositiveInteger(pathSegments[index])) {
+            return res.status(400).json({ error: 'Invalid ID' });
+        }
+    }
+
+    return next();
+}
+
+function authRateLimit(req, res, next) {
+    const now = Date.now();
+    const address = req.ip;
+    const existing = authRateLimitByAddress.get(address);
+    const entry =
+        existing && existing.resetAt > now
+            ? existing
+            : { count: 0, resetAt: now + authRateLimitWindowMs };
+
+    entry.count++;
+    authRateLimitByAddress.set(address, entry);
+
+    if (entry.count > authRateLimitMaxRequests) {
+        const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+        res.set('Retry-After', String(retryAfter));
+        return res.status(429).json({ error: 'Too many requests' });
+    }
+
+    return next();
+}
+
+app.use('/api', validateApiInput);
+app.use('/api/auth/login', authRateLimit);
+app.use('/api/auth/register', authRateLimit);
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/users', profileRouter);
+
+app.use('/api', (req, res) => {
+    res.set('Allow', 'GET, POST, PUT, PATCH, DELETE');
+    return res.status(405).json({ error: 'Method not allowed' });
+});
+
 app.use(express.static('public'));
 
 app.get('/', verifyTokenOptional, async (req, res) => {
@@ -245,16 +332,30 @@ app.get('/update/:id', verifyToken, verifyAdmin, async (req, res) => {
 });
 
 app.get('/account', verifyToken, renderAccount);
-app.get('/profile/:userID', verifyTokenOptional, (req, res, next) => {
-    if (req.user && String(req.user.id) === String(req.params.userID)) {
-        return res.redirect('/account');
+app.get(
+    '/profile/:userID',
+    verifyTokenOptional,
+    (req, res, next) => {
+        if (req.user && String(req.user.id) === String(req.params.userID)) {
+            return res.redirect('/account');
+        }
+
+        return next();
+    },
+    renderProfile
+);
+
+app.use((err, req, res, next) => {
+    if (!req.path.startsWith('/api')) return next(err);
+
+    if (res.headersSent) return next(err);
+
+    if (err instanceof SyntaxError && 'body' in err) {
+        return res.status(400).json({ error: 'Invalid JSON body' });
     }
 
-    return next();
-}, renderProfile);
-
-app.use((req, res) => {
-    res.redirect('/');
+    console.error(err);
+    return res.status(500).json({ error: 'Internal server error!' });
 });
 
 app.listen(PORT, () => {

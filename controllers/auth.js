@@ -13,6 +13,7 @@ import {
 } from '../utils/httpResponses.js';
 import {
     validateRequiredFields,
+    validateMaxLength,
     validateEmail,
     validatePassword,
 } from '../utils/fieldValidator.js';
@@ -64,6 +65,11 @@ export async function register(req, res) {
         const firstNameValue = firstName.trim();
         const lastNameValue = lastName.trim();
         const emailValue = email.trim();
+        const lengthError = validateMaxLength(
+            { firstName: firstNameValue, lastName: lastNameValue, email: emailValue },
+            { firstName: 150, lastName: 150, email: 100 }
+        );
+        if (lengthError) return badRequest(res, lengthError);
 
         const emailError = validateEmail(emailValue);
         if (emailError) {
