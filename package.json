@@ -4,7 +4,8 @@
     "description": "Personal blogging platform with CRUD operations and an API connection",
     "main": "app.js",
     "scripts": {
-        "dev": "nodemon app.js"
+        "dev": "nodemon app.js",
+        "security:test": "node security/owasp-api-tests.mjs"
     },
     "keywords": [],
     "author": "trenter39",
