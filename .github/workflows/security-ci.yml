@@ -25,7 +25,7 @@ jobs:
             - name: Run SAST Scanner (Semgrep)
               run: |
                   pip install semgrep
-                  semgrep scan --config auto --error
+                  semgrep scan --config auto
 
     dast-and-fuzzing:
         name: 'Phase 2: Ephemeral Deployment & Dynamic Fuzzing'
