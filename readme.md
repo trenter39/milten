@@ -51,6 +51,22 @@ node app.js
 
 Now you can visit the website via `http://localhost:8080/`.
 
+## OWASP API threat checks
+
+Run the targeted security checks against a running API:
+
+```
+npm run security:test
+```
+
+The suite verifies that:
+
+- Authenticated users cannot access another user's likes or bookmarks (BOLA/IDOR).
+- SQL injection, XSS, and oversized login inputs receive `400` responses without stack traces.
+- More than 100 login requests from one address receive `429 Too Many Requests`.
+
+The same checks run in the security CI workflow after Schemathesis.
+
 ## Docker Setup (Recommended)
 
 For a quick out-of-the-box experience without manual database setup, run with Docker Compose:

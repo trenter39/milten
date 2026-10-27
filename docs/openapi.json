@@ -1,0 +1,1750 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Milten API",
+        "description": "JSON API for the Milten personal blogging platform. Authentication is maintained with an HttpOnly JWT cookie named `token`.",
+        "version": "2.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Local development server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Registration, login, logout, and account management"
+        },
+        {
+            "name": "Posts",
+            "description": "Blog post operations"
+        },
+        {
+            "name": "Comments",
+            "description": "Comments belonging to a post"
+        },
+        {
+            "name": "Engagement",
+            "description": "Post likes and bookmarks"
+        },
+        {
+            "name": "Users",
+            "description": "Public user profiles and activity"
+        }
+    ],
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Register a user",
+                "operationId": "register",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/RegisterRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                },
+                                "example": {
+                                    "message": "User registered sucessfully"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Log in",
+                "operationId": "login",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/LoginRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful. The response sets the HttpOnly `token` cookie.",
+                        "headers": {
+                            "Set-Cookie": {
+                                "$ref": "#/components/headers/SetCookie"
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/InvalidCredentials"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": ["Authentication"],
+                "summary": "Log out",
+                "operationId": "logout",
+                "responses": {
+                    "204": {
+                        "description": "Authentication cookie cleared",
+                        "headers": {
+                            "Set-Cookie": {
+                                "$ref": "#/components/headers/SetCookie"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": ["Authentication"],
+                "summary": "Get the current user",
+                "operationId": "getCurrentUser",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Current authenticated user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": ["user"],
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Authentication"],
+                "summary": "Delete the current user's account",
+                "operationId": "deleteAccount",
+                "security": [{ "cookieAuth": [] }],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/PreviousPasswordRequest"
+                },
+                "responses": {
+                    "204": {
+                        "description": "Account deleted and authentication cookie cleared",
+                        "headers": {
+                            "Set-Cookie": {
+                                "$ref": "#/components/headers/SetCookie"
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/UserNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/auth/me/profile": {
+            "patch": {
+                "tags": ["Authentication"],
+                "summary": "Update the current user's profile",
+                "operationId": "updateProfile",
+                "security": [{ "cookieAuth": [] }],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/ProfileUpdateRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated profile. The authentication cookie is replaced with a token containing the new profile.",
+                        "headers": {
+                            "Set-Cookie": {
+                                "$ref": "#/components/headers/SetCookie"
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": ["user"],
+                                    "properties": {
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserWithCreatedAt"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/Conflict"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/auth/me/password": {
+            "patch": {
+                "tags": ["Authentication"],
+                "summary": "Change the current user's password",
+                "operationId": "updatePassword",
+                "security": [{ "cookieAuth": [] }],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/PasswordUpdateRequest"
+                },
+                "responses": {
+                    "204": {
+                        "description": "Password changed"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/UserNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/posts": {
+            "get": {
+                "tags": ["Posts"],
+                "summary": "List posts",
+                "operationId": "getPosts",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SearchTerm"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SearchQuery"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Posts. When `term`, `q`, or `page` is supplied, the response includes pagination.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Post"
+                                            }
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/PaginatedPosts"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Posts"],
+                "summary": "Create a post",
+                "operationId": "createPost",
+                "security": [{ "cookieAuth": [] }],
+                "description": "Requires an authenticated user with the `admin` role.",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/PostRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AdminForbidden"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/posts/{postID}": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/PostId"
+                }
+            ],
+            "get": {
+                "tags": ["Posts"],
+                "summary": "Get a post",
+                "operationId": "getPost",
+                "responses": {
+                    "200": {
+                        "description": "Post",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Posts"],
+                "summary": "Update a post",
+                "operationId": "updatePost",
+                "security": [{ "cookieAuth": [] }],
+                "description": "Requires an authenticated user with the `admin` role.",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/PostRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated post",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AdminForbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Posts"],
+                "summary": "Delete a post",
+                "operationId": "deletePost",
+                "security": [{ "cookieAuth": [] }],
+                "description": "Requires an authenticated user with the `admin` role.",
+                "responses": {
+                    "204": {
+                        "description": "Post deleted"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AdminForbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/posts/{postID}/likes": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/PostId"
+                }
+            ],
+            "get": {
+                "tags": ["Engagement"],
+                "summary": "Get the current user's like status",
+                "operationId": "getLikeStatus",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Like status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LikeStatus"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Engagement"],
+                "summary": "Like a post",
+                "operationId": "likePost",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Post liked (repeating the request is idempotent)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Engagement"],
+                "summary": "Remove the current user's like",
+                "operationId": "unlikePost",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Like removed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/posts/{postID}/bookmarks": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/PostId"
+                }
+            ],
+            "get": {
+                "tags": ["Engagement"],
+                "summary": "Get the current user's bookmark status",
+                "operationId": "getBookmarkStatus",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Bookmark status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookmarkStatus"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Engagement"],
+                "summary": "Bookmark a post",
+                "operationId": "bookmarkPost",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Post bookmarked (repeating the request is idempotent)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Engagement"],
+                "summary": "Remove the current user's bookmark",
+                "operationId": "unbookmarkPost",
+                "security": [{ "cookieAuth": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Bookmark removed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MessageResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/posts/{postID}/comments": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/PostId"
+                }
+            ],
+            "get": {
+                "tags": ["Comments"],
+                "summary": "List comments for a post",
+                "operationId": "getComments",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CommentsPage"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated comments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedComments"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/CommentsNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Comments"],
+                "summary": "Create a comment",
+                "operationId": "createComment",
+                "security": [{ "cookieAuth": [] }],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/CommentRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/PostNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/posts/{postID}/comments/{commentID}": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/PostId"
+                },
+                {
+                    "$ref": "#/components/parameters/CommentId"
+                }
+            ],
+            "get": {
+                "tags": ["Comments"],
+                "summary": "Get a comment",
+                "operationId": "getComment",
+                "responses": {
+                    "200": {
+                        "description": "Comment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/CommentNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Comments"],
+                "summary": "Update a comment",
+                "operationId": "updateComment",
+                "security": [{ "cookieAuth": [] }],
+                "description": "Only the comment owner can update a comment.",
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/CommentRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated comment",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/CommentForbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/CommentNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Comments"],
+                "summary": "Delete a comment",
+                "operationId": "deleteComment",
+                "security": [{ "cookieAuth": [] }],
+                "description": "The comment owner or an administrator can delete a comment.",
+                "responses": {
+                    "204": {
+                        "description": "Comment deleted"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/CommentForbidden"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/CommentNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/users/{userID}": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/UserId"
+                }
+            ],
+            "get": {
+                "tags": ["Users"],
+                "summary": "Get a public user profile",
+                "operationId": "getProfile",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/CommentsPage"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Public profile and the user's comments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfileResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/UserNotFound"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/users/{userID}/likes": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/UserId"
+                }
+            ],
+            "get": {
+                "tags": ["Users", "Engagement"],
+                "summary": "List posts liked by a user",
+                "operationId": "getLikesByUser",
+                "security": [{ "cookieAuth": [] }],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/LikesPage"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated liked posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedLikes"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/UserNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        },
+        "/api/users/{userID}/bookmarks": {
+            "parameters": [
+                {
+                    "$ref": "#/components/parameters/UserId"
+                }
+            ],
+            "get": {
+                "tags": ["Users", "Engagement"],
+                "summary": "List posts bookmarked by a user",
+                "operationId": "getBookmarksByUser",
+                "security": [{ "cookieAuth": [] }],
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/BookmarksPage"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PageSize"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated bookmarked posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedBookmarks"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/UserNotFound"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/InvalidToken"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "cookieAuth": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "token",
+                "description": "JWT issued by `/api/auth/login` and stored in an HttpOnly cookie."
+            }
+        },
+        "headers": {
+            "SetCookie": {
+                "description": "The HttpOnly JWT authentication cookie. The exact attributes depend on the deployment environment.",
+                "schema": {
+                    "type": "string"
+                }
+            }
+        },
+        "parameters": {
+            "PostId": {
+                "name": "postID",
+                "in": "path",
+                "required": true,
+                "description": "Positive numeric post ID.",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 1
+                }
+            },
+            "CommentId": {
+                "name": "commentID",
+                "in": "path",
+                "required": true,
+                "description": "Positive numeric comment ID.",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 1
+                }
+            },
+            "UserId": {
+                "name": "userID",
+                "in": "path",
+                "required": true,
+                "description": "Positive numeric user ID.",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 1
+                }
+            },
+            "SearchTerm": {
+                "name": "term",
+                "in": "query",
+                "description": "Search title, content, and category.",
+                "schema": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            },
+            "SearchQuery": {
+                "name": "q",
+                "in": "query",
+                "description": "Alias for `term`.",
+                "schema": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            },
+            "Page": {
+                "name": "page",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                }
+            },
+            "CommentsPage": {
+                "name": "comments_page",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                }
+            },
+            "LikesPage": {
+                "name": "likes_page",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                }
+            },
+            "BookmarksPage": {
+                "name": "bookmarks_page",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                }
+            },
+            "PageSize": {
+                "name": "pageSize",
+                "in": "query",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 10
+                }
+            }
+        },
+        "requestBodies": {
+            "RegisterRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/RegisterRequest"
+                        }
+                    }
+                }
+            },
+            "LoginRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/LoginRequest"
+                        }
+                    }
+                }
+            },
+            "ProfileUpdateRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ProfileUpdateRequest"
+                        }
+                    }
+                }
+            },
+            "PasswordUpdateRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PasswordUpdateRequest"
+                        }
+                    }
+                }
+            },
+            "PreviousPasswordRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PreviousPasswordRequest"
+                        }
+                    }
+                }
+            },
+            "PostRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/PostRequest"
+                        }
+                    }
+                }
+            },
+            "CommentRequest": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CommentRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "RegisterRequest": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email", "password"],
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "$ref": "#/components/schemas/Password"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "LoginRequest": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ProfileUpdateRequest": {
+                "type": "object",
+                "required": ["firstName", "lastName", "email"],
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PasswordUpdateRequest": {
+                "type": "object",
+                "required": ["previousPassword", "password"],
+                "properties": {
+                    "previousPassword": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "password": {
+                        "$ref": "#/components/schemas/Password"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PreviousPasswordRequest": {
+                "type": "object",
+                "required": ["previousPassword"],
+                "properties": {
+                    "previousPassword": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                },
+                "additionalProperties": false
+            },
+            "PostRequest": {
+                "type": "object",
+                "required": ["title", "content", "category"],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "content": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Rich-text HTML. It is sanitized by the server before persistence."
+                    },
+                    "category": {
+                        "type": "string",
+                        "minLength": 1
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CommentRequest": {
+                "type": "object",
+                "required": ["content"],
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Rich-text HTML. It is sanitized by the server before persistence."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Password": {
+                "type": "string",
+                "minLength": 8,
+                "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$",
+                "description": "At least 8 characters, including one uppercase letter, one lowercase letter, and one digit."
+            },
+            "User": {
+                "type": "object",
+                "required": ["id", "firstName", "lastName", "email", "role"],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": ["user", "admin"]
+                    }
+                }
+            },
+            "UserWithCreatedAt": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/User"
+                    },
+                    {
+                        "type": "object",
+                        "required": ["createdAt"],
+                        "properties": {
+                            "createdAt": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        }
+                    }
+                ]
+            },
+            "Post": {
+                "type": "object",
+                "required": ["id", "title", "content", "category", "createdAt", "updatedAt"],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "content": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "category": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "Comment": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "postID",
+                    "content",
+                    "createdAt",
+                    "updatedAt",
+                    "userID",
+                    "author"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "postID": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "content": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "userID": {
+                        "type": "integer",
+                        "format": "int64",
+                        "nullable": true
+                    },
+                    "author": {
+                        "type": "string",
+                        "description": "Display name, or `Deleted account` when the author no longer exists."
+                    }
+                }
+            },
+            "Pagination": {
+                "type": "object",
+                "required": ["page", "pageSize", "totalCount", "totalPages"],
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "pageSize": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "totalCount": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "minimum": 1
+                    }
+                }
+            },
+            "PaginatedPosts": {
+                "type": "object",
+                "required": ["posts", "pagination"],
+                "properties": {
+                    "posts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Post"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/Pagination"
+                    }
+                }
+            },
+            "PaginatedComments": {
+                "type": "object",
+                "required": ["comments", "pagination"],
+                "properties": {
+                    "comments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Comment"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/Pagination"
+                    }
+                }
+            },
+            "Profile": {
+                "type": "object",
+                "required": ["id", "firstName", "lastName", "email", "createdAt"],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "ProfileComment": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/Comment"
+                    },
+                    {
+                        "type": "object",
+                        "required": ["preview"],
+                        "properties": {
+                            "preview": {
+                                "type": "string",
+                                "maxLength": 150
+                            }
+                        }
+                    }
+                ]
+            },
+            "ProfileResponse": {
+                "type": "object",
+                "required": ["profile", "comments", "pagination"],
+                "properties": {
+                    "profile": {
+                        "$ref": "#/components/schemas/Profile"
+                    },
+                    "comments": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProfileComment"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/Pagination"
+                    }
+                }
+            },
+            "PostReference": {
+                "type": "object",
+                "required": ["postID", "postTitle", "issuedAt"],
+                "properties": {
+                    "postID": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "postTitle": {
+                        "type": "string"
+                    },
+                    "issuedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "PaginatedPostReferences": {
+                "type": "object",
+                "required": ["pagination"],
+                "properties": {
+                    "likes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PostReference"
+                        },
+                        "description": "Liked posts when returned by the likes endpoint."
+                    },
+                    "bookmarks": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PostReference"
+                        },
+                        "description": "Bookmarked posts when returned by the bookmarks endpoint."
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/Pagination"
+                    }
+                },
+                "description": "The response contains either `likes` or `bookmarks`, depending on the endpoint."
+            },
+            "PaginatedLikes": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/PaginatedPostReferences"
+                    },
+                    {
+                        "type": "object",
+                        "required": ["likes"]
+                    }
+                ]
+            },
+            "PaginatedBookmarks": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/PaginatedPostReferences"
+                    },
+                    {
+                        "type": "object",
+                        "required": ["bookmarks"]
+                    }
+                ]
+            },
+            "LikeStatus": {
+                "type": "object",
+                "required": ["liked"],
+                "properties": {
+                    "liked": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "BookmarkStatus": {
+                "type": "object",
+                "required": ["bookmarked"],
+                "properties": {
+                    "bookmarked": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "MessageResponse": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LoginResponse": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/MessageResponse"
+                    },
+                    {
+                        "type": "object",
+                        "required": ["user"],
+                        "properties": {
+                            "user": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                ]
+            },
+            "Error": {
+                "type": "object",
+                "required": ["error"],
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "BadRequest": {
+                "description": "Invalid input or identifier.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Authentication is required or credentials are invalid.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "InvalidCredentials": {
+                "description": "Invalid email or password.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "error": "Invalid credentials"
+                        }
+                    }
+                }
+            },
+            "InvalidToken": {
+                "description": "The JWT is invalid or expired.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "AdminForbidden": {
+                "description": "The authenticated user is not an administrator.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "CommentForbidden": {
+                "description": "The authenticated user cannot modify this comment.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "Conflict": {
+                "description": "The request conflicts with an existing resource.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "PostNotFound": {
+                "description": "Post not found.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "CommentNotFound": {
+                "description": "Comment not found.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "CommentsNotFound": {
+                "description": "No comments were found for the post.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "UserNotFound": {
+                "description": "User not found.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "InternalServerError": {
+                "description": "Unexpected server error.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "error": "Internal server error!"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
